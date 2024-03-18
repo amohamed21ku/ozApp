@@ -84,28 +84,81 @@ class _ItemsScreenState extends State<ItemsScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columnSpacing: 15,
-                headingRowHeight: 50,
+                columnSpacing: 20,
+                headingRowHeight: 40,
                 dataRowHeight: 60,
                 headingTextStyle: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-                columns: const [
-                  DataColumn(label: Text('Kodu')),
-                  DataColumn(label: Text('Eni')),
-                  DataColumn(label: Text('Gramaj')),
-                  DataColumn(label: Text('S/Item Name')),
-                  DataColumn(label: Text('USD')),
-                  DataColumn(label: Text('Tarih')), // Add Tarih column
+                headingRowColor:
+                MaterialStateColor.resolveWith((states) => const Color(0xffa4392f)), // Background color of the heading
+                dividerThickness: 1, // Thickness of the divider lines
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'Kodu',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Eni',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Gramaj',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'S/Item Name',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'USD',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Tarih',
+                      style: GoogleFonts.poppins(color: Colors.white),
+                    ),
+                  ),
                 ],
                 rows: filteredList.map((data) {
                   int index = dataList.indexOf(data);
                   return DataRow(cells: [
-                    DataCell(Text(data['Kodu']!)),
-                    DataCell(Text(data['Eni']!)),
-                    DataCell(Text(data['Gramaj']!)),
-                    DataCell(Text(data['S/Item Name']!)),
+                    DataCell(
+                      Text(
+                        data['Kodu']!,
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        data['Eni']!,
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        data['Gramaj']!,
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        data['S/Item Name']!,
+                        style: GoogleFonts.poppins(color: Colors.black),
+                      ),
+                    ),
                     DataCell(
                       GestureDetector(
                         onDoubleTapDown: (details) {
@@ -119,22 +172,31 @@ class _ItemsScreenState extends State<ItemsScreen> {
                               details.globalPosition.dy,
                             ),
                             items: [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 enabled: false,
-                                child: Text('Previous Prices'),
+                                child: Text(
+                                  'Previous Prices',
+                                  style: GoogleFonts.poppins(color: Colors.black),
+                                ),
                               ),
                               ...dataList
                                   .where((item) => item['USD'] != null)
-                                  .map((item) => PopupMenuItem(
-                                child: Text(
-                                  '${item['Tarih']}: ${item['USD']}',
+                                  .map(
+                                    (item) => PopupMenuItem(
+                                  child: Text(
+                                    '${item['Tarih']}: ${item['USD']}',
+                                    style: GoogleFonts.poppins(color: Colors.black),
+                                  ),
                                 ),
-                              ))
+                              )
                                   .toList(),
                             ],
                           );
                         },
-                        child: Text(data['USD']!),
+                        child: Text(
+                          data['USD']!,
+                          style: GoogleFonts.poppins(color: Colors.black),
+                        ),
                       ),
                     ),
                     DataCell(
@@ -166,24 +228,23 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           value: data['Tarih']!.isEmpty ? null : data['Tarih'],
                           decoration: InputDecoration(
                             border: InputBorder.none, // Remove default border
-                            enabledBorder: UnderlineInputBorder( // Add underline border
+                            enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.transparent),
                             ),
-                            focusedBorder: UnderlineInputBorder( // Add focused border
+                            focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.blue),
                             ),
-                            isDense: true, // Reduce padding
-                            contentPadding: EdgeInsets.zero, // Remove default content padding
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
                           ),
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 16.0,
                             color: Colors.black87,
                           ),
-                          icon: Icon(Icons.arrow_drop_down), // Add dropdown icon
+                          icon: Icon(Icons.arrow_drop_down),
                         ),
                       ),
                     ),
-
                   ]);
                 }).toList(),
               ),
