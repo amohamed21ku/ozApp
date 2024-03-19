@@ -15,7 +15,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
       'Eni': '170 CM',
       'Gramaj': '160 GSM',
       'Supplier': 'Supplier A',
-      'S/Item Name': 'Item 1',
+      'S/Item Name': 'ROMANTIC X',
       'USD': '\$2.12',
       'Tarih': '17-Jan-23',
     },
@@ -66,27 +66,39 @@ class _ItemsScreenState extends State<ItemsScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
             child: TextField(
               controller: searchController,
               onChanged: (value) {
                 filterData(value);
               },
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Search',
-                hintText: 'Search',
+                hintText: 'Search by Kodu',
+                hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200,
+                ),
+                labelStyle: GoogleFonts.poppins(color:Colors.grey ),
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1), // Change border color here
+                  borderRadius: BorderRadius.circular(10.0), // Optional: Adjust border radius
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xffa4392f),width: 2), // Change border color when focused
+                  borderRadius: BorderRadius.circular(15.0), // Optional: Adjust border radius
+                ),
               ),
             ),
+
+
           ),
           Expanded(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: DataTable(
-                columnSpacing: 20,
+                columnSpacing: 22,
                 headingRowHeight: 40,
-                dataRowHeight: 60,
+                dataRowHeight: 50,
                 headingTextStyle: GoogleFonts.poppins(
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
@@ -98,37 +110,38 @@ class _ItemsScreenState extends State<ItemsScreen> {
                   DataColumn(
                     label: Text(
                       'Kodu',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Name',
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
                     ),
                   ),
                   DataColumn(
                     label: Text(
                       'Eni',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
                     ),
                   ),
                   DataColumn(
                     label: Text(
                       'Gramaj',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
                     ),
                   ),
-                  DataColumn(
-                    label: Text(
-                      'S/Item Name',
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
-                  ),
+
                   DataColumn(
                     label: Text(
                       'USD',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
                     ),
                   ),
                   DataColumn(
                     label: Text(
                       'Tarih',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
                     ),
                   ),
                 ],
@@ -138,27 +151,29 @@ class _ItemsScreenState extends State<ItemsScreen> {
                     DataCell(
                       Text(
                         data['Kodu']!,
-                        style: GoogleFonts.poppins(color: Colors.black),
-                      ),
-                    ),
-                    DataCell(
-                      Text(
-                        data['Eni']!,
-                        style: GoogleFonts.poppins(color: Colors.black),
-                      ),
-                    ),
-                    DataCell(
-                      Text(
-                        data['Gramaj']!,
-                        style: GoogleFonts.poppins(color: Colors.black),
+                        style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
                       ),
                     ),
                     DataCell(
                       Text(
                         data['S/Item Name']!,
-                        style: GoogleFonts.poppins(color: Colors.black),
+                        style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
                       ),
                     ),
+                    DataCell(
+                      Text(
+                        data['Eni']!,
+                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12), // Adjust font size here
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        data['Gramaj']!,
+                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12), // Adjust font size here
+                      ),
+                    ),
+
+
                     DataCell(
                       GestureDetector(
                         onDoubleTapDown: (details) {
@@ -195,7 +210,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                         },
                         child: Text(
                           data['USD']!,
-                          style: GoogleFonts.poppins(color: Colors.black),
+                          style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
                         ),
                       ),
                     ),
@@ -231,17 +246,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.transparent),
                             ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                            ),
+
                             isDense: true,
-                            contentPadding: EdgeInsets.zero,
+                            contentPadding: EdgeInsets.all(2),
                           ),
                           style: GoogleFonts.poppins(
-                            fontSize: 16.0,
+                            fontSize: 12.0,
                             color: Colors.black87,
                           ),
-                          icon: Icon(Icons.arrow_drop_down),
                         ),
                       ),
                     ),

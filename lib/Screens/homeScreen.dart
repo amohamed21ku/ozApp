@@ -240,7 +240,6 @@ class _homeScreenState extends State<homeScreen> {
   }
 
   Widget buildItemsPage() {
-
       return Container(
       color: Color(0xffa4392f),
       child: Center(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../Widgets/infocard.dart';
 import 'CustomerItemsScreen.dart';
@@ -13,17 +14,23 @@ class CustomerScreen extends StatefulWidget {
 }
 
 class _CustomerScreenState extends State<CustomerScreen> {
-  List<Customer> customers = []; // List to store customer data
+  List<Customer> customers = [];
+  bool showSpinner = false; // Track loading state
 
   @override
   void initState() {
     super.initState();
-    fetchCustomers(); // Fetch customers data when screen initializes
+    fetchCustomers();
   }
 
-  // Function to fetch customer data
-  void fetchCustomers() {
-    FirebaseFirestore.instance.collection('customers').get().then((querySnapshot) {
+  Future<void> fetchCustomers() async {
+    setState(() {
+      showSpinner = true; // Show loading HUD
+    });
+
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('customers').get();
+      customers.clear(); // Clear existing data
       querySnapshot.docs.forEach((doc) {
         final name = doc['name'] as String;
         final company = doc['company'] as String;
@@ -32,10 +39,17 @@ class _CustomerScreenState extends State<CustomerScreen> {
         customers.add(Customer(name: name, company: company, initial: initial, items: items));
         print(doc['items']);
       });
-      setState(() {}); // Update the UI after fetching customers
-    }).catchError((error) {
+    } catch (error) {
       print('Error fetching customers: $error');
+    }
+
+    setState(() {
+      showSpinner = false; // Hide loading HUD
     });
+  }
+
+  Future<void> _handleRefresh() async {
+    await fetchCustomers();
   }
 
   @override
@@ -58,55 +72,70 @@ class _CustomerScreenState extends State<CustomerScreen> {
         onPressed: () {
           // Add functionality to add new customers here
         },
-        child: Icon(Icons.add,color: Colors.white,),
+        child: Icon(Icons.add, color: Colors.white),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(25.0),
+      body: ModalProgressHUD(
+        progressIndicator: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
+          strokeWidth: 5.0, // Adjust spinner thickness if needed
+        ),
+        inAsyncCall: showSpinner,
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: Color(0xffa4392f), // Change refresh indicator color to theme color
+          backgroundColor: Colors.grey[200], // Change background color of refresh indicator
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Customer List',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
+                Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Customer List',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 10),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: customers.length,
+                    itemBuilder: (context, index) {
+                      final customer = customers[index];
+                      return infoCard(
+                        name: customer.name,
+                        company: customer.company,
+                        onpress: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CustomerItemsScreen(customer: customer),
+                          ));
+                        },
+                        initial: customer.initial,
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ListView.builder(
-                itemCount: customers.length,
-                itemBuilder: (context, index) {
-                  final customer = customers[index];
-                  return infoCard(
-                    name: customer.name,
-                    company: customer.company,
-                    onpress: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CustomerItemsScreen(customer: customer),
-                      ));
-                    },
-                    initial: customer.initial,
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -116,7 +145,7 @@ class Customer {
   final String name;
   final String company;
   final String initial;
-  final Map<String, dynamic> items; // Specify the data type for keys and values in the map
+  final Map<String, dynamic> items;
 
   Customer({
     required this.name,
