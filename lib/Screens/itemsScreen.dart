@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'SelectedItemScreen.dart'; // Import the SelectedItemScreen
 
 class ItemsScreen extends StatefulWidget {
   const ItemsScreen({Key? key}) : super(key: key);
@@ -9,45 +12,46 @@ class ItemsScreen extends StatefulWidget {
 }
 
 class _ItemsScreenState extends State<ItemsScreen> {
-  List<Map<String, String>> dataList = [
-    {
-      'Kodu': '101 001',
-      'Eni': '170 CM',
-      'Gramaj': '160 GSM',
-      'Supplier': 'Supplier A',
-      'S/Item Name': 'ROMANTIC X',
-      'USD': '\$2.12',
-      'Tarih': '17-Jan-23',
-    },
-    {
-      'Kodu': '101 002',
-      'Eni': '172 CM',
-      'Gramaj': '176 GSM',
-      'S/Item Name': 'Item 2',
-      'USD': "\$3.7",
-      'Tarih': '21-Jun-23',
-    },
-    // Add more data as needed
-  ];
+  bool showSpinner = false; // Track loading state
 
-  List<Map<String, String>> filteredList = [];
-
+  List<Map<String, dynamic>> dataList = [];
+  List<Map<String, dynamic>> filteredList = [];
   TextEditingController searchController = TextEditingController();
-
-  String? selectedPrice;
 
   @override
   void initState() {
     super.initState();
+    fetchDataFromFirestore();
+  }
+
+  Future<void> _handleRefresh() async {
+    await fetchDataFromFirestore();
+  }
+
+  Future<void> fetchDataFromFirestore() async {
+    setState(() {
+      showSpinner = true; // Show loading HUD
+    });
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+    await FirebaseFirestore.instance.collection('new_items').get();
+
+    dataList = querySnapshot.docs.map((doc) => doc.data()).toList();
     filteredList = dataList;
+    // Sort the dataList by 'Kodu' field
+    dataList.sort((a, b) => a['kodu'].compareTo(b['kodu']));
+    setState(() {
+      showSpinner = false; // Hide loading HUD
+    });
   }
 
   void filterData(String query) {
     setState(() {
       filteredList = dataList
           .where((item) =>
-      item['Gramaj']!.toLowerCase().contains(query.toLowerCase()) ||
-          item['S/Item Name']!.toLowerCase().contains(query.toLowerCase()))
+      item['kodu'].toLowerCase().contains(query.toLowerCase()) ||
+          item['sItemName']
+              .toLowerCase()
+              .contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -62,208 +66,186 @@ class _ItemsScreenState extends State<ItemsScreen> {
           style: GoogleFonts.poppins(color: Colors.white),
         ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              controller: searchController,
-              onChanged: (value) {
-                filterData(value);
-              },
-              decoration: InputDecoration(
-                labelText: 'Search',
-                hintText: 'Search by Kodu',
-                hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200,
+      body: ModalProgressHUD(
+        progressIndicator: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)),
+          strokeWidth: 5.0,
+        ),
+        inAsyncCall: showSpinner,
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: Color(0xffa4392f),
+          backgroundColor: Colors.grey[200],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        filterData(value);
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Search',
+                        hintText: 'Search by Kodu or Name',
+                        hintStyle:
+                        GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                        labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                        prefixIcon: Icon(Icons.search),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(width: 1),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                          BorderSide(color: Color(0xffa4392f), width: 2),
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Item Count: ${filteredList.length}',
+                          style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                labelStyle: GoogleFonts.poppins(color:Colors.grey ),
-                prefixIcon: Icon(Icons.search),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 1), // Change border color here
-                  borderRadius: BorderRadius.circular(10.0), // Optional: Adjust border radius
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xffa4392f),width: 2), // Change border color when focused
-                  borderRadius: BorderRadius.circular(15.0), // Optional: Adjust border radius
-                ),
+
+
               ),
-            ),
 
-
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columnSpacing: 22,
-                headingRowHeight: 40,
-                dataRowHeight: 50,
-                headingTextStyle: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                headingRowColor:
-                MaterialStateColor.resolveWith((states) => const Color(0xffa4392f)), // Background color of the heading
-                dividerThickness: 1, // Thickness of the divider lines
-                columns: [
-                  DataColumn(
-                    label: Text(
-                      'Kodu',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Name',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Eni',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Gramaj',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-
-                  DataColumn(
-                    label: Text(
-                      'USD',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Tarih',
-                      style: GoogleFonts.poppins(color: Colors.white,fontSize: 12),
-                    ),
-                  ),
-                ],
-                rows: filteredList.map((data) {
-                  int index = dataList.indexOf(data);
-                  return DataRow(cells: [
-                    DataCell(
-                      Text(
-                        data['Kodu']!,
-                        style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Container(
+                      decoration: BoxDecoration( // Custom decoration to remove the box
+                        border: Border.all(color: Colors.transparent), // Set border color to transparent
                       ),
-                    ),
-                    DataCell(
-                      Text(
-                        data['S/Item Name']!,
-                        style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
-                      ),
-                    ),
-                    DataCell(
-                      Text(
-                        data['Eni']!,
-                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12), // Adjust font size here
-                      ),
-                    ),
-                    DataCell(
-                      Text(
-                        data['Gramaj']!,
-                        style: GoogleFonts.poppins(color: Colors.black, fontSize: 12), // Adjust font size here
-                      ),
-                    ),
-
-
-                    DataCell(
-                      GestureDetector(
-                        onDoubleTapDown: (details) {
-                          // Show popup menu on double tap
-                          showMenu(
-                            context: context,
-                            position: RelativeRect.fromLTRB(
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                            ),
-                            items: [
-                              PopupMenuItem(
-                                enabled: false,
-                                child: Text(
-                                  'Previous Prices',
-                                  style: GoogleFonts.poppins(color: Colors.black),
-                                ),
+                      child: DataTable(
+                        columnSpacing: 22,
+                        headingRowHeight: 40,
+                        dataRowHeight: 60,
+                        headingTextStyle: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        headingRowColor: MaterialStateColor.resolveWith(
+                                (states) => const Color(0xffa4392f)),
+                        dividerThickness: 1,
+                        columns: [
+                          DataColumn(
+                            label: Text(
+                              'Kodu',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
                               ),
-                              ...dataList
-                                  .where((item) => item['USD'] != null)
-                                  .map(
-                                    (item) => PopupMenuItem(
-                                  child: Text(
-                                    '${item['Tarih']}: ${item['USD']}',
-                                    style: GoogleFonts.poppins(color: Colors.black),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Name',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Eni',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Gramaj',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'USD',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Tarih',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                        rows: filteredList.map((data) {
+                          return DataRow(
+                            onSelectChanged: (selected) {
+                              if (selected != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelectedItemScreen(
+                                      selectedItem: data,
+                                    ),
                                   ),
-                                ),
-                              )
-                                  .toList(),
+                                );
+                              }
+                            },
+                            cells: [
+                              DataCell(
+                                Text(data['kodu'].toString()),
+                              ),
+                              DataCell(
+                                Text(data['sItemName'].toString()),
+                              ),
+                              DataCell(
+                                Text(data['eni'].toString()),
+                              ),
+                              DataCell(
+                                Text(data['gramaj'].toString()),
+                              ),
+                              DataCell(
+                                Text(data['pricesAndDates[0]'].toString()),
+                              ),
+                              DataCell(
+                                Text(data['Tarih'].toString()),
+                              ),
                             ],
                           );
-                        },
-                        child: Text(
-                          data['USD']!,
-                          style: GoogleFonts.poppins(color: Colors.black,fontSize: 12),
-                        ),
+                        }).toList(),
                       ),
                     ),
-                    DataCell(
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          items: (data['Tarih']!.isEmpty
-                          ? ['Select Date'] + ['17-Jan-23', 'other_date']
-                                  : <String>[data['Tarih']!] + ['17-Jan-23', 'other_date'])
-                              .toSet()
-                              .toList()
-                              .map<DropdownMenuItem<String>>(
-                                (value) => DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            ),
-                          )
-                              .toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              data['Tarih'] = newValue!;
-                              // Update the price here based on the selected date
-                            });
-                          },
-                          value: data['Tarih']!.isEmpty ? null : data['Tarih'],
-                          decoration: InputDecoration(
-                            border: InputBorder.none, // Remove default border
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.transparent),
-                            ),
-
-                            isDense: true,
-                            contentPadding: EdgeInsets.all(2),
-                          ),
-                          style: GoogleFonts.poppins(
-                            fontSize: 12.0,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]);
-                }).toList(),
+                  ),
+                ),
               ),
-            ),
+
+
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
+

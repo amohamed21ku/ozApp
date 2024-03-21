@@ -42,7 +42,10 @@ dependencies:
   firebase_database: ^10.4.9
   modal_progress_hud_nsn: ^0.4.0
   google_sign_in: ^6.2.1
-  flutter_staggered_animations: ^1.1.1
+  advanced_datatable: ^0.0.8
+
+
+
 
 
 

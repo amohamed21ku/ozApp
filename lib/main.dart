@@ -9,6 +9,8 @@ import 'Screens/profileScreen.dart';
 import 'Screens/welcomeScreen.dart';
 
 Future<void> main() async {
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
