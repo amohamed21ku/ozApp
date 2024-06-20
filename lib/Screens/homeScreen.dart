@@ -161,6 +161,7 @@ class _homeScreenState extends State<homeScreen> {
                             colour: Colors.white,
                             title: 'Sheet',
                             onPressed: () {
+                              Navigator.pushNamed(context, "balancesheet");
                               // Handle sheet button tap
                             },
                             width: 10,
@@ -176,6 +177,7 @@ class _homeScreenState extends State<homeScreen> {
                             colour: Colors.white,
                             title: 'Users',
                             onPressed: () {
+                              Navigator.pushNamed(context, "usersscreen");
                               // Navigate to customers screen
                             },
                             width: 0,

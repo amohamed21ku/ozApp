@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:oz/Screens/itemsScreen.dart';
+import 'package:oz/Screens/usersScreen.dart';
 
+import 'Screens/balancesheet.dart';
 import 'Screens/customerScreen.dart';
 import 'Screens/homeScreen.dart';
 import 'Screens/loginScreen.dart';
@@ -39,6 +41,9 @@ class MyApp extends StatelessWidget {
     "itemsscreen": (context) => ItemsScreen(),
     "profilescreen": (context) => profileScreen(),
     "customerscreen": (context) => CustomerScreen(),
+    "balancesheet": (context) => BalanceSheet(),
+    "usersscreen": (context) => UsersScreen(),
+
     },
 
       home:welcomeScreen(),
