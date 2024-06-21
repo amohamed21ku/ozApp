@@ -36,7 +36,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
         final company = doc['company'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
-        customers.add(Customer(name: name, company: company, initial: initial, items: items));
+        final cid = doc.id;
+        final goods = doc['goods'];
+        customers.add(Customer(name: name, company: company, initial: initial, items: items, cid: cid, goods: goods));
         print(doc['items']);
       });
     } catch (error) {
@@ -141,16 +143,23 @@ class _CustomerScreenState extends State<CustomerScreen> {
   }
 }
 
+
 class Customer {
+  final String cid;
   final String name;
   final String company;
   final String initial;
   final Map<String, dynamic> items;
+  final Map<String, dynamic> goods;
+
+
 
   Customer({
+    required this.cid,
     required this.name,
     required this.company,
     required this.initial,
     required this.items,
+    required this.goods,
   });
 }

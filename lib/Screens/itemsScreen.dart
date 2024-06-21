@@ -167,8 +167,8 @@ class RowSource extends DataTableSource {
         DataCell(Text(item['sItemName'].toString())),
         DataCell(Text(item['eni'].toString())),
         DataCell(Text(item['gramaj'].toString())),
-        DataCell(Text(item['pricesAndDates.last[0][0]'].toString())),
-        DataCell(Text(item['Tarih'].toString())),
+        DataCell(Text(item['price'].toString())),
+        // DataCell(Text(item['Tarih'].toString())),
       ],
     );
   }
