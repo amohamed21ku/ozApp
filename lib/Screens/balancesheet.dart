@@ -7,6 +7,7 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:oz/Screens/spreedsheet.dart';
 
 import '../Widgets/infocard.dart';
+import '../models/Customers.dart';
 
 class BalanceSheet extends StatefulWidget {
   const BalanceSheet({Key? key}) : super(key: key);
@@ -144,26 +145,26 @@ class _BalanceSheetState extends State<BalanceSheet> {
   }
 }
 
-
-class Customer {
-  final String cid;
-  final String name;
-  final String company;
-  final String initial;
-  final Map<String, dynamic> items;
-  final Map<String, dynamic> goods;
-
-
-
-  Customer({
-    required this.cid,
-    required this.name,
-    required this.company,
-    required this.initial,
-    required this.items,
-    required this.goods,
-  });
-}
+//
+// class Customer {
+//   final String cid;
+//   final String name;
+//   final String company;
+//   final String initial;
+//   final Map<String, dynamic> items;
+//   final Map<String, dynamic> goods;
+//
+//
+//
+//   Customer({
+//     required this.cid,
+//     required this.name,
+//     required this.company,
+//     required this.initial,
+//     required this.items,
+//     required this.goods,
+//   });
+// }
 
 
 

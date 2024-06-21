@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import '../models/Customers.dart';
 import 'balancesheet.dart';
 
 class Spreadsheet extends StatefulWidget {

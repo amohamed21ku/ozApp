@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Widgets/infocard.dart';
+import '../models/Customers.dart';
 import 'CustomerItemsScreen.dart';
 
 class CustomerScreen extends StatefulWidget {
@@ -229,21 +230,4 @@ class _CustomerScreenState extends State<CustomerScreen> {
   }
 }
 
-class Customer {
-  final String cid;
-  final String name;
-  final String company;
-  final String initial;
-  final Map<String, dynamic> items;
-  final Map<String, dynamic> goods;
-
-  Customer({
-    required this.cid,
-    required this.name,
-    required this.company,
-    required this.initial,
-    required this.items,
-    required this.goods,
-  });
-}
 

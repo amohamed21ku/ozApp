@@ -18,4 +18,3 @@ class Customer {
     required this.goods,
   });
 }
-

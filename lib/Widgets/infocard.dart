@@ -106,57 +106,60 @@ class infoCard extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: Icon(Icons.delete, color: Colors.white),
       ),
-      child: Material(
-        elevation: 6, // Add elevation to the whole container
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(bottom: 5),
-          height: 70,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 20,
-                    child: Prof_icon,
-                    backgroundColor: Color(0xffa4392f),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${this.name}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.black,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+      child: GestureDetector(
+        onTap: onpress,
+        child: Material(
+          elevation: 6, // Add elevation to the whole container
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(bottom: 5),
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      child: Prof_icon,
+                      backgroundColor: Color(0xffa4392f),
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${this.name}',
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${this.company}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 15,
-              )
-            ],
+                        Text(
+                          '${this.company}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 15,
+                )
+              ],
+            ),
           ),
         ),
       ),

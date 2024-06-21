@@ -44,8 +44,8 @@ class _homeScreenState extends State<homeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Business',
+            icon: Icon(Icons.today),
+            label: 'ToDo',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

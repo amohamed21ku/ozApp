@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../Widgets/mycard.dart'; // Assuming mycard.dart is in a separate folder named Widgets
-import 'customerScreen.dart';
+import '../models/Customers.dart';
 
 class CustomerItemsScreen extends StatefulWidget {
   final Customer customer;
@@ -23,6 +23,12 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
   void initState() {
     super.initState();
     fetchData();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // Dispose any resources here if needed
   }
 
   Future<void> fetchData() async {
@@ -55,10 +61,12 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
           items = fetchedItems;
         });
       }
-      setState(() => isLoading = false);
-
     } catch (e) {
       print('Error fetching data: $e');
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
     }
   }
 
@@ -216,8 +224,6 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
                   ),
                 ],
               ),
-
-
             ],
           ),
         ),
