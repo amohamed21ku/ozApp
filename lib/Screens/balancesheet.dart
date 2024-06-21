@@ -34,12 +34,12 @@ class _BalanceSheetState extends State<BalanceSheet> {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('customers').get();
       customers.clear(); // Clear existing data
       querySnapshot.docs.forEach((doc) {
+        final cid = doc.id;
         final name = doc['name'] as String;
         final company = doc['company'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
-        final Map<String, dynamic> goods = doc['goods'] as Map<String, dynamic>;
-        customers.add(Customer(name: name, company: company, initial: initial, items: items, goods: goods));
+        customers.add(Customer(name: name, company: company, initial: initial, items: items, goods: {}, cid: cid));
         print(doc['items']);
       });
     } catch (error) {
@@ -144,7 +144,9 @@ class _BalanceSheetState extends State<BalanceSheet> {
   }
 }
 
+
 class Customer {
+  final String cid;
   final String name;
   final String company;
   final String initial;
@@ -154,6 +156,7 @@ class Customer {
 
 
   Customer({
+    required this.cid,
     required this.name,
     required this.company,
     required this.initial,
@@ -161,4 +164,6 @@ class Customer {
     required this.goods,
   });
 }
+
+
 
