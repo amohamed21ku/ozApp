@@ -37,6 +37,33 @@ class MyCard extends StatefulWidget {
 }
 
 class _MyCardState extends State<MyCard> {
+  late TextEditingController _koduController;
+  late TextEditingController _nameController;
+  late TextEditingController _dateController;
+  late TextEditingController _priceController;
+  late bool _yardage;
+  late bool _hanger;
+
+  @override
+  void initState() {
+    super.initState();
+    _koduController = TextEditingController(text: widget.kodu);
+    _nameController = TextEditingController(text: widget.name);
+    _dateController = TextEditingController(text: widget.date);
+    _priceController = TextEditingController(text: widget.price);
+    _yardage = widget.yardage;
+    _hanger = widget.hanger;
+  }
+
+  @override
+  void dispose() {
+    _koduController.dispose();
+    _nameController.dispose();
+    _dateController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -50,7 +77,12 @@ class _MyCardState extends State<MyCard> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: widget.onChangedKodu,
+                    onChanged: (value) {
+                      widget.onChangedKodu(value);
+                      setState(() {
+                        _koduController.text = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Kodu',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -60,13 +92,18 @@ class _MyCardState extends State<MyCard> {
                       ),
                     ),
                     cursorColor: Color(0xffa4392f),
-                    controller: TextEditingController(text: widget.kodu),
+                    controller: _koduController,
                   ),
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    onChanged: widget.onChangedName,
+                    onChanged: (value) {
+                      widget.onChangedName(value);
+                      setState(() {
+                        _nameController.text = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Name',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -76,7 +113,7 @@ class _MyCardState extends State<MyCard> {
                       ),
                     ),
                     cursorColor: Color(0xffa4392f),
-                    controller: TextEditingController(text: widget.name),
+                    controller: _nameController,
                   ),
                 ),
               ],
@@ -89,7 +126,12 @@ class _MyCardState extends State<MyCard> {
                     onTap: () => _selectDate(context),
                     child: AbsorbPointer(
                       child: TextField(
-                        onChanged: widget.onChangedDate,
+                        onChanged: (value) {
+                          widget.onChangedDate(value);
+                          setState(() {
+                            _dateController.text = value;
+                          });
+                        },
                         decoration: InputDecoration(
                           labelText: 'Date',
                           labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -99,7 +141,7 @@ class _MyCardState extends State<MyCard> {
                           ),
                         ),
                         cursorColor: Color(0xffa4392f),
-                        controller: TextEditingController(text: widget.date),
+                        controller: _dateController,
                       ),
                     ),
                   ),
@@ -107,7 +149,12 @@ class _MyCardState extends State<MyCard> {
                 SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    onChanged: widget.onChangedPrice,
+                    onChanged: (value) {
+                      widget.onChangedPrice(value);
+                      setState(() {
+                        _priceController.text = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Price',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -117,7 +164,7 @@ class _MyCardState extends State<MyCard> {
                       ),
                     ),
                     cursorColor: Color(0xffa4392f),
-                    controller: TextEditingController(text: widget.price),
+                    controller: _priceController,
                   ),
                 ),
               ],
@@ -129,8 +176,13 @@ class _MyCardState extends State<MyCard> {
                   child: Row(
                     children: [
                       Checkbox(
-                        value: widget.yardage,
-                        onChanged: (value) => widget.onChangedYardage(value ?? false),
+                        value: _yardage,
+                        onChanged: (value) {
+                          widget.onChangedYardage(value ?? false);
+                          setState(() {
+                            _yardage = value ?? false;
+                          });
+                        },
                         activeColor: Color(0xffa4392f),
                       ),
                       Text(
@@ -144,8 +196,13 @@ class _MyCardState extends State<MyCard> {
                   child: Row(
                     children: [
                       Checkbox(
-                        value: widget.hanger,
-                        onChanged: (value) => widget.onChangedHanger(value ?? false),
+                        value: _hanger,
+                        onChanged: (value) {
+                          widget.onChangedHanger(value ?? false);
+                          setState(() {
+                            _hanger = value ?? false;
+                          });
+                        },
                         activeColor: Color(0xffa4392f),
                       ),
                       Text(
@@ -184,9 +241,10 @@ class _MyCardState extends State<MyCard> {
       },
     );
     if (picked != null) {
+      String formattedDate = picked.toString().split(' ')[0];
+      widget.onChangedDate(formattedDate);
       setState(() {
-        widget.onChangedDate(picked.toString().split(' ')[0]);
-// Continued from the previous code snippet
+        _dateController.text = formattedDate;
       });
     }
   }
