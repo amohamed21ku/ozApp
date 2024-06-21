@@ -130,7 +130,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                             builder: (context) => Spreadsheet(customer: customer,),
                           ));
                         },
-                        initial: customer.initial,
+                        initial: customer.initial, customerId: customer.cid,
                       );
                     },
                   ),

@@ -124,7 +124,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
 
                         },
-                        initial: user.initial,
+                        initial: user.initial, customerId: '',
                       );
                     },
                   ),
