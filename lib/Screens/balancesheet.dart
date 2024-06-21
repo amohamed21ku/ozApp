@@ -38,7 +38,8 @@ class _BalanceSheetState extends State<BalanceSheet> {
         final company = doc['company'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
-        customers.add(Customer(name: name, company: company, initial: initial, items: items));
+        final Map<String, dynamic> goods = doc['goods'] as Map<String, dynamic>;
+        customers.add(Customer(name: name, company: company, initial: initial, items: items, goods: goods));
         print(doc['items']);
       });
     } catch (error) {
@@ -126,7 +127,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                         company: customer.company,
                         onpress: () {
                           Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Spreadsheet(),
+                            builder: (context) => Spreadsheet(customer: customer,),
                           ));
                         },
                         initial: customer.initial,
@@ -148,12 +149,16 @@ class Customer {
   final String company;
   final String initial;
   final Map<String, dynamic> items;
+  final Map<String, dynamic> goods;
+
+
 
   Customer({
     required this.name,
     required this.company,
     required this.initial,
     required this.items,
+    required this.goods,
   });
 }
 
