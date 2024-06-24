@@ -3,15 +3,20 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../Widgets/todo.dart';
 import '../components.dart';
+import '../models/user.dart';
 
 class homeScreen extends StatefulWidget {
-  final String userName = "AbdulAziz Ashi"; // Example user name
+
+  final myUser current_user;
+
+  homeScreen({required this.current_user});
 
   @override
   _homeScreenState createState() => _homeScreenState();
 }
 
 class _homeScreenState extends State<homeScreen> {
+
   PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
 
@@ -94,7 +99,7 @@ class _homeScreenState extends State<homeScreen> {
                                 ),
                               ),
                               Text(
-                                widget.userName,
+                                widget.current_user.name,
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   color: Colors.black54,

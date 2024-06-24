@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../Widgets/infocard.dart';
+import '../models/user.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
@@ -13,7 +14,7 @@ class UsersScreen extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<UsersScreen> {
-  List<User> users = [];
+  List<myUser> users = [];
   bool showSpinner = false; // Track loading state
 
   @override
@@ -33,8 +34,10 @@ class _UsersScreenState extends State<UsersScreen> {
       querySnapshot.docs.forEach((doc) {
         final name = doc['name'] as String;
         final email = doc['email'] as String;
+        final username = doc['username'] as String;
+        final password = doc['password'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
-        users.add(User(name: name, email: email, initial: initial));
+        users.add(myUser(name: name, email: email, initial: initial, username: username, password: password));
         print(doc['items']);
       });
     } catch (error) {
@@ -147,15 +150,4 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 }
 
-class User {
-  final String name;
-  final String email;
-  final String initial;
-
-  User({
-    required this.name,
-    required this.email,
-    required this.initial,
-  });
-}
 

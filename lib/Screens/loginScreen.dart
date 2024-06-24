@@ -5,6 +5,8 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:oz/Screens/homeScreen.dart';
+import 'package:oz/models/user.dart';
 
 import '../components.dart';
 import '../constants.dart';
@@ -17,8 +19,7 @@ class loginScreen extends StatefulWidget {
   State<loginScreen> createState() => _loginScreenState();
 }
 
-class _loginScreenState extends State<loginScreen>
-    with SingleTickerProviderStateMixin {
+class _loginScreenState extends State<loginScreen> with SingleTickerProviderStateMixin {
   bool showSpinner = false;
   String username = '';
   String pass = '';
@@ -35,10 +36,8 @@ class _loginScreenState extends State<loginScreen>
       duration: Duration(seconds: 1),
     );
     controller.forward();
-    animation = ColorTween(begin: Color(0xffa4392f), end: Colors.black)
-        .animate(controller);
-    animation2 = ColorTween(begin: Colors.white, end: Color(0xffa4392f))
-        .animate(controller);
+    animation = ColorTween(begin: Color(0xffa4392f), end: Colors.black).animate(controller);
+    animation2 = ColorTween(begin: Colors.white, end: Color(0xffa4392f)).animate(controller);
 
     controller.addListener(() {
       setState(() {});
@@ -53,33 +52,33 @@ class _loginScreenState extends State<loginScreen>
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
         final credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
 
-        final userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
         final user = userCredential.user;
 
-        final snapshot = await FirebaseFirestore.instance
-            .collection('residents')
-            .where('email', isEqualTo: user!.email)
-            .get();
+        final snapshot = await FirebaseFirestore.instance.collection('residents').where('email', isEqualTo: user!.email).get();
 
         if (snapshot.docs.isNotEmpty) {
-          Navigator.pushNamed(context, "homescreen");
-        } else {
-          // Navigator.pushNamed(context, "homescreen");
+          final currentUser = myUser(
+            username: user.uid,
+            email: '', password:'' , name: '', initial: '',
+            // add other necessary fields
+          );
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => homeScreen(current_user: currentUser),
+          ));
         }
-      }
 
-      setState(() {
-        showSpinner = false;
-      });
+        setState(() {
+          showSpinner = false;
+        });
+      }
     } catch (e) {
       print('Error: $e');
       setState(() {
@@ -106,7 +105,6 @@ class _loginScreenState extends State<loginScreen>
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: ModalProgressHUD(
-
                   progressIndicator: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to red
                     strokeWidth: 5.0, // Adjust spinner thickness if needed
@@ -209,21 +207,33 @@ class _loginScreenState extends State<loginScreen>
                                   });
 
                                   try {
-                                    final snapshot = await FirebaseFirestore
-                                        .instance
+                                    final snapshot = await FirebaseFirestore.instance
                                         .collection('users')
                                         .where('username', isEqualTo: username)
                                         .where('password', isEqualTo: pass)
                                         .get();
 
                                     if (snapshot.docs.isNotEmpty) {
-                                      Navigator.pushNamed(context, "homescreen");
+                                      final userData = snapshot.docs.first.data();
+                                      final currentUser = myUser(
+                                        name: userData['name'],
+                                        email: userData['email'],
+                                        username: userData['username'],
+                                        password: userData['password'], initial: '${userData['name'][0]}',
+                                      );
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => homeScreen(current_user: currentUser),
+                                      ));
+                                    } else {
+                                      // Handle the case where no matching user is found
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Invalid username or password')),
+                                      );
                                     }
                                     setState(() {
                                       showSpinner = false;
                                     });
                                   } catch (e) {
-                                    Navigator.pushNamed(context, "homescreen");
                                     print('Error: $e');
                                     setState(() {
                                       showSpinner = false;
@@ -251,7 +261,7 @@ class _loginScreenState extends State<loginScreen>
                                       style: GoogleFonts.poppins(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color:  Color(0xffa4392f),
+                                        color: Color(0xffa4392f),
                                       ),
                                     )
                                   ],
@@ -288,14 +298,14 @@ class _loginScreenState extends State<loginScreen>
                                   children: [
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
-                                      children:  [
+                                      children: [
                                         // google button
                                         SquareTile(imagePath: 'images/google.png', ontap: _signInWithGoogle,),
 
                                         SizedBox(width: 40),
 
                                         // apple button
-                                        SquareTile(imagePath: 'images/apple.png', ontap: () {  },)
+                                        SquareTile(imagePath: 'images/apple.png', ontap: () {},)
                                       ],
                                     ),
                                   ],
@@ -316,3 +326,4 @@ class _loginScreenState extends State<loginScreen>
     );
   }
 }
+
