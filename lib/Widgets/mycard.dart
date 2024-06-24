@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:async';
 
 class MyCard extends StatefulWidget {
   final ValueChanged<String> onChangedKodu;
@@ -44,6 +45,8 @@ class _MyCardState extends State<MyCard> {
   late bool _yardage;
   late bool _hanger;
 
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -53,10 +56,34 @@ class _MyCardState extends State<MyCard> {
     _priceController = TextEditingController(text: widget.price);
     _yardage = widget.yardage;
     _hanger = widget.hanger;
+
+    _koduController.addListener(() {
+      _onTextChanged(_koduController.text, widget.onChangedKodu);
+    });
+
+    _nameController.addListener(() {
+      _onTextChanged(_nameController.text, widget.onChangedName);
+    });
+
+    _dateController.addListener(() {
+      _onTextChanged(_dateController.text, widget.onChangedDate);
+    });
+
+    _priceController.addListener(() {
+      _onTextChanged(_priceController.text, widget.onChangedPrice);
+    });
+  }
+
+  void _onTextChanged(String text, ValueChanged<String> onChanged) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      onChanged(text);
+    });
   }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _koduController.dispose();
     _nameController.dispose();
     _dateController.dispose();
@@ -77,12 +104,6 @@ class _MyCardState extends State<MyCard> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: (value) {
-                      widget.onChangedKodu(value);
-                      setState(() {
-                        _koduController.text = value;
-                      });
-                    },
                     decoration: InputDecoration(
                       labelText: 'Kodu',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -98,12 +119,6 @@ class _MyCardState extends State<MyCard> {
                 SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    onChanged: (value) {
-                      widget.onChangedName(value);
-                      setState(() {
-                        _nameController.text = value;
-                      });
-                    },
                     decoration: InputDecoration(
                       labelText: 'Name',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -126,12 +141,6 @@ class _MyCardState extends State<MyCard> {
                     onTap: () => _selectDate(context),
                     child: AbsorbPointer(
                       child: TextField(
-                        onChanged: (value) {
-                          widget.onChangedDate(value);
-                          setState(() {
-                            _dateController.text = value;
-                          });
-                        },
                         decoration: InputDecoration(
                           labelText: 'Date',
                           labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
@@ -149,12 +158,6 @@ class _MyCardState extends State<MyCard> {
                 SizedBox(width: 8),
                 Expanded(
                   child: TextField(
-                    onChanged: (value) {
-                      widget.onChangedPrice(value);
-                      setState(() {
-                        _priceController.text = value;
-                      });
-                    },
                     decoration: InputDecoration(
                       labelText: 'Price',
                       labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),

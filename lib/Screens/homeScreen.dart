@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../Widgets/todo.dart';
 import '../components.dart';
 
 class homeScreen extends StatefulWidget {
@@ -30,10 +31,10 @@ class _homeScreenState extends State<homeScreen> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        physics:NeverScrollableScrollPhysics() ,
+        physics: NeverScrollableScrollPhysics(),
         children: [
           buildHomePage(),
-          buildItemsPage(),
+          buildToDoPage(),  // Updated to include ToDo page
           buildProfilePage(),
         ],
       ),
@@ -241,21 +242,11 @@ class _homeScreenState extends State<homeScreen> {
     );
   }
 
-  Widget buildItemsPage() {
-      return Container(
-      color: Color(0xffa4392f),
-      child: Center(
-        child: Text(
-          'Items Page',
-          style: TextStyle(fontSize: 24, color: Colors.white),
-        ),
-      ),
-    );
+  Widget buildToDoPage() {
+    return ToDoPage();  // Define the ToDoPage below
   }
 
   Widget buildProfilePage() {
-
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
