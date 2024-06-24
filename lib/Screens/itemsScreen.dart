@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'SelectedItemScreen.dart'; // Import the SelectedItemScreen
 
 class ItemsScreen extends StatefulWidget {
   const ItemsScreen({Key? key}) : super(key: key);
@@ -16,7 +15,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
   List<Map<String, dynamic>> dataList = [];
   List<Map<String, dynamic>> filteredList = [];
   TextEditingController searchController = TextEditingController();
-  ScrollController _scrollController = ScrollController();
+  bool showDateColumn = false; // Track visibility of Date column
 
   @override
   void initState() {
@@ -24,19 +23,18 @@ class _ItemsScreenState extends State<ItemsScreen> {
     fetchDataFromFirestore();
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
   Future<void> fetchDataFromFirestore() async {
     setState(() => isLoading = true);
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('new_items').get();
+    await FirebaseFirestore.instance.collection('items').get();
+
     dataList = querySnapshot.docs.map((doc) => doc.data()).toList();
-    filteredList = dataList;
+
+    // Sort dataList based on "kodu" field
     dataList.sort((a, b) => a['kodu'].compareTo(b['kodu']));
+
+    filteredList = dataList;
+
     setState(() => isLoading = false);
   }
 
@@ -45,8 +43,39 @@ class _ItemsScreenState extends State<ItemsScreen> {
       filteredList = dataList
           .where((item) =>
       item['kodu'].toLowerCase().contains(query.toLowerCase()) ||
-          item['sItemName'].toLowerCase().contains(query.toLowerCase()))
+          item['name'].toLowerCase().contains(query.toLowerCase()))
           .toList();
+    });
+  }
+
+  Future<void> updateData(int index, String key, String newValue) async {
+    setState(() => isLoading = true);
+
+    try {
+      String docId = dataList[index]['docId'];
+      await FirebaseFirestore.instance
+          .collection('items')
+          .doc(docId)
+          .update({key: newValue});
+
+      setState(() {
+        dataList[index][key] = newValue;
+
+        // Sort dataList again based on "kodu" field after update
+        dataList.sort((a, b) => a['kodu'].compareTo(b['kodu']));
+
+        filteredList = dataList;
+      });
+    } catch (e) {
+      print('Error updating document: $e');
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  void toggleDateColumnVisibility() {
+    setState(() {
+      showDateColumn = !showDateColumn;
     });
   }
 
@@ -95,11 +124,19 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
+                      style: GoogleFonts.poppins(fontSize: 12),
                     ),
                     SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        IconButton(
+                          onPressed: toggleDateColumnVisibility,
+                          icon: Icon(
+                            showDateColumn ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.grey,
+                          ),
+                        ),
                         Text(
                           'Item Count: ${filteredList.length}',
                           style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
@@ -109,35 +146,125 @@ class _ItemsScreenState extends State<ItemsScreen> {
                   ],
                 ),
               ),
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  controller: _scrollController,
-                  child: PaginatedDataTable(
-                    header: Text(
-                      'Items',
-                      style: GoogleFonts.poppins(color: Color(0xffa4392f)),
-                    ),
-                    rowsPerPage: 200,
-                    columnSpacing: 22,
-                    headingRowHeight: 40,
-                    dataRowHeight: 60,
-                    arrowHeadColor: Color(0xffa4392f),
-                    headingRowColor: MaterialStateColor.resolveWith(
-                            (states) => const Color(0xffa4392f)),
-                    columns: [
-                      DataColumn(label: Text('Kodu', style: GoogleFonts.poppins(color: Colors.white))),
-                      DataColumn(label: Text('Name', style: GoogleFonts.poppins(color: Colors.white))),
-                      DataColumn(label: Text('Eni', style: GoogleFonts.poppins(color: Colors.white))),
-                      DataColumn(label: Text('Gramaj', style: GoogleFonts.poppins(color: Colors.white))),
-                      DataColumn(label: Text('USD', style: GoogleFonts.poppins(color: Colors.white))),
-                      DataColumn(label: Text('Tarih', style: GoogleFonts.poppins(color: Colors.white))),
+              Card(
+                color: Color(0xffa4392f), // Set background color
+                margin: EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Kodu",
+                          style: TextStyle(
+                            color: Colors.white, // Set text color to white
+                            fontWeight: FontWeight.bold, // Make text bold
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Name",
+                          style: TextStyle(
+                            color: Colors.white, // Set text color to white
+                            fontWeight: FontWeight.bold, // Make text bold
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Eni",
+                          style: TextStyle(
+                            color: Colors.white, // Set text color to white
+                            fontWeight: FontWeight.bold, // Make text bold
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Gramaj",
+                          style: TextStyle(
+                            color: Colors.white, // Set text color to white
+                            fontWeight: FontWeight.bold, // Make text bold
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          "Price",
+                          style: TextStyle(
+                            color: Colors.white, // Set text color to white
+                            fontWeight: FontWeight.bold, // Make text bold
+                          ),
+                        ),
+                      ),
+                      if (showDateColumn) // Show Date column only if showDateColumn is true
+                        Expanded(
+                          child: Text(
+                            "Date",
+                            style: TextStyle(
+                              color: Colors.white, // Set text color to white
+                              fontWeight: FontWeight.bold, // Make text bold
+                            ),
+                          ),
+                        ),
                     ],
-                    source: RowSource(
-                      myData: filteredList,
-                      count: filteredList.length,
-                    ),
                   ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredList.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                filteredList[index]['kodu'].toString(),
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                filteredList[index]['name'].toString(),
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${filteredList[index]['eni']} ',
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${filteredList[index]['gramaj']} ',
+
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                '${filteredList[index]['current price']}',
+                                style: GoogleFonts.poppins(fontSize: 12),
+                              ),
+                            ),
+                            if (showDateColumn) // Show Date value only if showDateColumn is true
+                              Expanded(
+                                child: Text(
+                                  filteredList[index]['current tarih'].toString(),
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -146,39 +273,4 @@ class _ItemsScreenState extends State<ItemsScreen> {
       ),
     );
   }
-}
-
-class RowSource extends DataTableSource {
-  final List<Map<String, dynamic>> myData;
-  final int count;
-
-  RowSource({
-    required this.myData,
-    required this.count,
-  });
-
-  @override
-  DataRow? getRow(int index) {
-    if (index >= myData.length) return null;
-    final item = myData[index];
-    return DataRow(
-      cells: [
-        DataCell(Text(item['kodu'].toString())),
-        DataCell(Text(item['sItemName'].toString())),
-        DataCell(Text(item['eni'].toString())),
-        DataCell(Text(item['gramaj'].toString())),
-        DataCell(Text(item['price'].toString())),
-        // DataCell(Text(item['Tarih'].toString())),
-      ],
-    );
-  }
-
-  @override
-  int get rowCount => count;
-
-  @override
-  bool get isRowCountApproximate => false;
-
-  @override
-  int get selectedRowCount => 0;
 }
