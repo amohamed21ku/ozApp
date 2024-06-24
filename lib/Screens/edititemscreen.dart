@@ -3,16 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
-import 'edititemscreen.dart';
-
-class ItemsScreen extends StatefulWidget {
-  const ItemsScreen({Key? key}) : super(key: key);
+class EditItemScreen extends StatefulWidget {
+  const EditItemScreen({Key? key}) : super(key: key);
 
   @override
-  _ItemsScreenState createState() => _ItemsScreenState();
+  _EditItemScreenState createState() => _EditItemScreenState();
 }
 
-class _ItemsScreenState extends State<ItemsScreen> {
+class _EditItemScreenState extends State<EditItemScreen> {
   bool isLoading = false;
   List<Map<String, dynamic>> dataList = [];
   List<Map<String, dynamic>> filteredList = [];
@@ -23,6 +21,31 @@ class _ItemsScreenState extends State<ItemsScreen> {
   void initState() {
     super.initState();
     fetchDataFromFirestore();
+  }
+
+  Future<void> _selectDate(BuildContext context, int index) async {
+    DateTime initialDate = DateTime.tryParse(
+        filteredList[index]['current tarih']) ?? DateTime.now();
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(primary: Color(0xffa4392f)),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() {
+        filteredList[index]['current tarih'] = picked.toString().split(' ')[0];
+      });
+    }
   }
 
   Future<void> fetchDataFromFirestore() async {
@@ -89,7 +112,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                       decoration: InputDecoration(
                         labelText: 'Search',
                         hintText: 'Search by Kodu or Name',
-                        hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                        hintStyle: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w200),
                         labelStyle: GoogleFonts.poppins(color: Colors.grey),
                         prefixIcon: const Icon(Icons.search),
                         enabledBorder: OutlineInputBorder(
@@ -97,7 +121,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffa4392f), width: 2),
+                          borderSide: const BorderSide(color: Color(0xffa4392f),
+                              width: 2),
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
@@ -110,19 +135,22 @@ class _ItemsScreenState extends State<ItemsScreen> {
                         IconButton(
                           onPressed: toggleDateColumnVisibility,
                           icon: Icon(
-                            showDateColumn ? Icons.visibility : Icons.visibility_off,
+                            showDateColumn ? Icons.visibility : Icons
+                                .visibility_off,
                             color: Colors.grey,
                           ),
                         ),
                         Text(
                           'Item Count: ${filteredList.length}',
-                          style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
+                          style: GoogleFonts.poppins(color: Colors.black,
+                              fontSize: 14),
                         ),
                         IconButton( // This is the icon button
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const EditItemScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => const EditItemScreen()),
                             );
                           },
                           icon: const Icon(Icons.add),
@@ -204,47 +232,67 @@ class _ItemsScreenState extends State<ItemsScreen> {
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 10),
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Row(
                           children: [
                             Expanded(
-                              child: Text(
-                                filteredList[index]['kodu'].toString(),
+                              child: TextField(
+                                controller: TextEditingController(
+                                  text: filteredList[index]['kodu'].toString(),
+                                ),
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                filteredList[index]['name'].toString(),
+                              child: TextField(
+                                controller: TextEditingController(
+                                  text: filteredList[index]['name'].toString(),
+                                ),
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                '${filteredList[index]['eni']} ',
+                              child: TextField(
+                                controller: TextEditingController(
+                                  text: filteredList[index]['eni'].toString(),
+                                ),
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                '${filteredList[index]['gramaj']} ',
-
+                              child: TextField(
+                                controller: TextEditingController(
+                                  text: filteredList[index]['gramaj']
+                                      .toString(),
+                                ),
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
                             ),
                             Expanded(
-                              child: Text(
-                                '${filteredList[index]['current price']}',
+                              child: TextField(
+                                controller: TextEditingController(
+                                  text: filteredList[index]['current price']
+                                      .toString(),
+                                ),
                                 style: GoogleFonts.poppins(fontSize: 12),
                               ),
                             ),
                             if (showDateColumn) // Show Date value only if showDateColumn is true
                               Expanded(
-                                child: Text(
-                                  filteredList[index]['current tarih'].toString(),
-                                  style: GoogleFonts.poppins(fontSize: 12),
+                                child: GestureDetector(
+                                  onTap: () => _selectDate(context, index),
+                                  child: AbsorbPointer(
+                                    child: TextField(
+                                      controller: TextEditingController(
+                                        text: filteredList[index]['current tarih']
+                                            .toString(),
+                                      ),
+                                      style: GoogleFonts.poppins(fontSize: 12),
+                                    ),
+                                  ),
                                 ),
                               ),
                           ],
