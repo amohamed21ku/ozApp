@@ -593,3 +593,147 @@ class _MyCard2State extends State<MyCard2> {
     }
   }
 }
+
+
+
+
+class EditCard extends StatelessWidget {
+  final int index;
+  final Map<String, dynamic> item;
+  final bool showDateColumn;
+  final Function(int) onDelete;
+  final Future<void> Function(BuildContext, int) selectDate;
+  final Future<bool?> Function(int) confirmDeleteItem;
+
+  const EditCard({
+    required this.index,
+    required this.item,
+    required this.showDateColumn,
+    required this.onDelete,
+    required this.selectDate,
+    required this.confirmDeleteItem,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: UniqueKey(),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (direction) async {
+        return await confirmDeleteItem(index);
+      },
+      onDismissed: (direction) {
+        onDelete(index);
+      },
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: TextEditingController(
+                    text: item['kodu'].toString(),
+                  ),
+                  onChanged: (value) {
+                    item['kodu'] = value;
+                  },
+                  style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  maxLines: null,
+                  controller: TextEditingController(
+                    text: item['name'].toString(),
+                  ),
+                  onChanged: (value) {
+                    item['name'] = value;
+                  },
+                  style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: TextEditingController(
+                    text: item['eni'].toString(),
+                  ),
+                  onChanged: (value) {
+                    item['eni'] = value;
+                  },
+                  style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: TextEditingController(
+                    text: item['gramaj'].toString(),
+                  ),
+                  onChanged: (value) {
+                    item['gramaj'] = value;
+                  },
+                  style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: TextEditingController(
+                    text: item['current price'].toString(),
+                  ),
+                  onChanged: (value) {
+                    item['current price'] = value;
+                  },
+                  style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              if (showDateColumn)
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => selectDate(context, index),
+                    child: AbsorbPointer(
+                      child: TextField(
+                        maxLines: null,
+                        controller: TextEditingController(
+                          text: item['current tarih'].toString(),
+                        ),
+                        onChanged: (value) {
+                          item['current tarih'] = value;
+                        },
+                        style: GoogleFonts.poppins(fontSize: 12),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

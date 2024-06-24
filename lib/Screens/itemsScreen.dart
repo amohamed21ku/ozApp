@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import 'edititemscreen.dart';
+import 'itemDetails.dart';
 
 class ItemsScreen extends StatefulWidget {
   const ItemsScreen({Key? key}) : super(key: key);
@@ -30,7 +31,11 @@ class _ItemsScreenState extends State<ItemsScreen> {
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
     await FirebaseFirestore.instance.collection('items').get();
 
-    dataList = querySnapshot.docs.map((doc) => doc.data()).toList();
+    dataList = querySnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data();
+      data['id'] = doc.id; // Add the document ID to the data
+      return data;
+    }).toList();
 
     // Sort dataList based on "kodu" field
     dataList.sort((a, b) => a['kodu'].compareTo(b['kodu']));
@@ -60,11 +65,34 @@ class _ItemsScreenState extends State<ItemsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         backgroundColor: const Color(0xffa4392f),
         title: Text(
           'Items Screen',
           style: GoogleFonts.poppins(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EditItemScreen()),
+              ).then((value) {
+                // This code runs when EditItemScreen is popped and control returns to this screen
+                fetchDataFromFirestore();
+              });
+            },
+            icon: const Icon(Icons.edit, color: Colors.white),
+          ),
+        ],
       ),
       body: ModalProgressHUD(
         progressIndicator: const CircularProgressIndicator(
@@ -89,7 +117,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                       decoration: InputDecoration(
                         labelText: 'Search',
                         hintText: 'Search by Kodu or Name',
-                        hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                        hintStyle:
+                        GoogleFonts.poppins(fontWeight: FontWeight.w200),
                         labelStyle: GoogleFonts.poppins(color: Colors.grey),
                         prefixIcon: const Icon(Icons.search),
                         enabledBorder: OutlineInputBorder(
@@ -97,7 +126,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           borderRadius: BorderRadius.circular(10.0),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Color(0xffa4392f), width: 2),
+                          borderSide: const BorderSide(
+                              color: Color(0xffa4392f), width: 2),
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                       ),
@@ -105,28 +135,33 @@ class _ItemsScreenState extends State<ItemsScreen> {
                     ),
                     const SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        IconButton(
-                          onPressed: toggleDateColumnVisibility,
-                          icon: Icon(
-                            showDateColumn ? Icons.visibility : Icons.visibility_off,
-                            color: Colors.grey,
-                          ),
-                        ),
                         Text(
                           'Item Count: ${filteredList.length}',
                           style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
                         ),
-                        IconButton( // This is the icon button
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const EditItemScreen()),
-                            );
-                          },
-                          icon: const Icon(Icons.add),
-                          tooltip: 'Add Item',
+                        GestureDetector(
+                          onTap: toggleDateColumnVisibility,
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: toggleDateColumnVisibility,
+                                icon: Icon(
+                                  size: 20,
+                                  showDateColumn ? Icons.visibility_off : Icons.visibility,
+                                  color: Color(0xffa4392f),
+                                ),
+                              ),
+                              Text(
+                                showDateColumn ? 'Hide Date' : 'Show Date',
+                                style: GoogleFonts.poppins(
+                                  color: Color(0xffa4392f),
+                                  fontSize: 14, // Adjust font size as needed
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -203,51 +238,63 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 child: ListView.builder(
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                filteredList[index]['kodu'].toString(),
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ItemDetailsScreen(
+                              item: filteredList[index],
+                              docId: filteredList[index]['id'], // Pass the document ID
                             ),
-                            Expanded(
-                              child: Text(
-                                filteredList[index]['name'].toString(),
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                '${filteredList[index]['eni']} ',
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                '${filteredList[index]['gramaj']} ',
-
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                '${filteredList[index]['current price']}',
-                                style: GoogleFonts.poppins(fontSize: 12),
-                              ),
-                            ),
-                            if (showDateColumn) // Show Date value only if showDateColumn is true
+                          ),
+                        );
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            children: [
                               Expanded(
                                 child: Text(
-                                  filteredList[index]['current tarih'].toString(),
+                                  filteredList[index]['kodu'].toString(),
                                   style: GoogleFonts.poppins(fontSize: 12),
                                 ),
                               ),
-                          ],
+                              Expanded(
+                                child: Text(
+                                  filteredList[index]['name'].toString(),
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${filteredList[index]['eni']} ',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${filteredList[index]['gramaj']} ',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${filteredList[index]['current price']}',
+                                  style: GoogleFonts.poppins(fontSize: 12),
+                                ),
+                              ),
+                              if (showDateColumn) // Show Date value only if showDateColumn is true
+                                Expanded(
+                                  child: Text(
+                                    filteredList[index]['current tarih'].toString(),
+                                    style: GoogleFonts.poppins(fontSize: 12),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     );

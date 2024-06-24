@@ -197,7 +197,9 @@ class _homeScreenState extends State<homeScreen> {
                             colour: Color(0xffa4392f),
                             title: 'Add requested Sample by Customer',
                             onPressed: () {
-                              // Navigate to order tracking page
+                              Navigator.pushNamed(context, "customerscreen");
+
+
                             },
                             width: 0,
                             height: 50,
@@ -257,6 +259,9 @@ class _homeScreenState extends State<homeScreen> {
         ),
         backgroundColor: Color(0xffa4392f),
         elevation: 0,
+
+        automaticallyImplyLeading: false, // This line removes the default arrow icon
+
       ),
       backgroundColor: Colors.white,
       body: Row(

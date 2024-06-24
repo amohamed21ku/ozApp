@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ToDoPage extends StatefulWidget {
   @override
@@ -33,8 +34,10 @@ class _ToDoPageState extends State<ToDoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List'),
+        title: Text('To-Do List',style: GoogleFonts.poppins(color: Colors.white),),
         backgroundColor: Color(0xffa4392f),
+        automaticallyImplyLeading: false, // This line removes the default arrow icon
+
       ),
       body: ListView.builder(
         itemCount: users.length,

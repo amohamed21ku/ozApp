@@ -123,6 +123,15 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: Text(
           'Customer Items',
           style: GoogleFonts.poppins(

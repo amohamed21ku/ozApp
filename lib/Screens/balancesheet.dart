@@ -61,6 +61,15 @@ class _BalanceSheetState extends State<BalanceSheet> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         backgroundColor: Color(0xffa4392f),
         title: Text(
           'Balance Sheet',
@@ -71,13 +80,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffa4392f),
-        onPressed: () {
-          // Add functionality to add new customers here
-        },
-        child: Icon(Icons.add, color: Colors.white),
-      ),
+
       body: ModalProgressHUD(
         progressIndicator: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
