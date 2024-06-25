@@ -4,12 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import '../models/Customers.dart';
-import 'balancesheet.dart';
 
 class Spreadsheet extends StatefulWidget {
   final Customer customer;
 
-  Spreadsheet({required this.customer});
+  const Spreadsheet({super.key, required this.customer});
 
   @override
   _SpreadsheetState createState() => _SpreadsheetState();
@@ -19,13 +18,13 @@ class _SpreadsheetState extends State<Spreadsheet> {
   bool isLoading = false;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<Map<String, dynamic>> _data = [];
-  List<Map<String, dynamic>> _otherExpenses = [];
-  List<TextEditingController> _descriptionControllers = [];
-  List<TextEditingController> _quantityControllers = [];
-  List<TextEditingController> _unitPriceControllers = [];
-  List<TextEditingController> _otherDescControllers = [];
-  List<TextEditingController> _otherAmountControllers = [];
+  final List<Map<String, dynamic>> _data = [];
+  final List<Map<String, dynamic>> _otherExpenses = [];
+  final List<TextEditingController> _descriptionControllers = [];
+  final List<TextEditingController> _quantityControllers = [];
+  final List<TextEditingController> _unitPriceControllers = [];
+  final List<TextEditingController> _otherDescControllers = [];
+  final List<TextEditingController> _otherAmountControllers = [];
 
   double otherExpenseTotal = 0.0;
 
@@ -57,21 +56,21 @@ class _SpreadsheetState extends State<Spreadsheet> {
         }
       });
 
-      _data.forEach((row) {
+      for (var row in _data) {
         _descriptionControllers
             .add(TextEditingController(text: row['description']));
         _quantityControllers
             .add(TextEditingController(text: row['quantity'].toString()));
         _unitPriceControllers
             .add(TextEditingController(text: row['unitPrice'].toString()));
-      });
+      }
 
-      _otherExpenses.forEach((expense) {
+      for (var expense in _otherExpenses) {
         _otherDescControllers
             .add(TextEditingController(text: expense['description']));
         _otherAmountControllers
             .add(TextEditingController(text: expense['amount'].toString()));
-      });
+      }
     }
     setState(() => isLoading = false);
   }
@@ -79,11 +78,21 @@ class _SpreadsheetState extends State<Spreadsheet> {
 
   @override
   void dispose() {
-    _descriptionControllers.forEach((controller) => controller.dispose());
-    _quantityControllers.forEach((controller) => controller.dispose());
-    _unitPriceControllers.forEach((controller) => controller.dispose());
-    _otherDescControllers.forEach((controller) => controller.dispose());
-    _otherAmountControllers.forEach((controller) => controller.dispose());
+    for (var controller in _descriptionControllers) {
+      controller.dispose();
+    }
+    for (var controller in _quantityControllers) {
+      controller.dispose();
+    }
+    for (var controller in _unitPriceControllers) {
+      controller.dispose();
+    }
+    for (var controller in _otherDescControllers) {
+      controller.dispose();
+    }
+    for (var controller in _otherAmountControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -158,10 +167,10 @@ class _SpreadsheetState extends State<Spreadsheet> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Spreadsheet'),
+        title: const Text('Spreadsheet'),
       ),
       body: ModalProgressHUD(
-        progressIndicator: CircularProgressIndicator(
+        progressIndicator: const CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)),
           strokeWidth: 5.0,
         ),
@@ -183,7 +192,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       DataTable(
                         columnSpacing: 10,
                         headingRowHeight: 30,
@@ -197,14 +206,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                         rows: List.generate(_data.length, (index) {
                           return DataRow(cells: [
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: 100,
                                 child: TextField(
                                   controller: _descriptionControllers[index],
                                   style: GoogleFonts.poppins(fontSize: 12),
-                                  cursorColor: Color(0xffa4392f),
+                                  cursorColor: const Color(0xffa4392f),
                                   // Set the cursor color here
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(color: Color(0xffa4392f), width: 1.5),
                                     ),
@@ -219,14 +228,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                               ),
                             ),
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: 60,
                                 child: TextField(
                                   controller: _quantityControllers[index],
                                   keyboardType: TextInputType.number,
                                   style: GoogleFonts.poppins(fontSize: 12),
-                                  cursorColor: Color(0xffa4392f), // Set the cursor color here
-                                  decoration: InputDecoration(
+                                  cursorColor: const Color(0xffa4392f), // Set the cursor color here
+                                  decoration: const InputDecoration(
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(color: Color(0xffa4392f), width: 1.5),
                                     ),
@@ -243,14 +252,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                               ),
                             ),
                             DataCell(
-                              Container(
+                              SizedBox(
                                 width: 60,
                                 child:TextField(
                                   controller: _unitPriceControllers[index],
                                   keyboardType: TextInputType.number,
                                   style: GoogleFonts.poppins(fontSize: 12),
-                                  cursorColor: Color(0xffa4392f), // Set the cursor color here
-                                  decoration: InputDecoration(
+                                  cursorColor: const Color(0xffa4392f), // Set the cursor color here
+                                  decoration: const InputDecoration(
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(color: Color(0xffa4392f), width: 1.5),
                                     ),
@@ -268,14 +277,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                             DataCell(Text('\$'+(_data[index]['quantity'] * _data[index]['unitPrice']).toStringAsFixed(2), style: GoogleFonts.poppins(fontSize: 14))),
                             DataCell(
                               IconButton(
-                                icon: Icon(Icons.delete),
+                                icon: const Icon(Icons.delete),
                                 onPressed: () => _deleteRow(index),
                               ),
                             ),
                           ]);
                         }),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
@@ -299,7 +308,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
-                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               child: Text(
                                 'Add Other Expense',
                                 style: GoogleFonts.poppins(
@@ -310,7 +319,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         if (_otherExpenses.isNotEmpty)
                           DataTable(
                             columnSpacing: 10,
@@ -323,14 +332,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                             rows: List.generate(_otherExpenses.length, (index) {
                               return DataRow(cells: [
                                 DataCell(
-                                  Container(
+                                  SizedBox(
                                     width: 200,
                                     child: TextField(
                                       controller: _otherDescControllers[index],
                                       style: GoogleFonts.poppins(fontSize: 12),
-                                      cursorColor: Color(0xffa4392f), // Set the cursor color here
+                                      cursorColor: const Color(0xffa4392f), // Set the cursor color here
 
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         focusedBorder: UnderlineInputBorder(
                                           borderSide: BorderSide(color: Color(0xffa4392f),width: 1.5),),
 
@@ -346,16 +355,16 @@ class _SpreadsheetState extends State<Spreadsheet> {
                                   ),
                                 ),
                                 DataCell(
-                                  Container(
+                                  SizedBox(
                                     width: 100,
                                     child: TextField(
                                       controller: _otherAmountControllers[index],
                                       keyboardType: TextInputType.number,
                                       style: GoogleFonts.poppins(fontSize: 12),
-                                      cursorColor: Color(0xffa4392f), // Set the cursor color here
+                                      cursorColor: const Color(0xffa4392f), // Set the cursor color here
 
 
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                               focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Color(0xffa4392f),width: 1.5),),
 
@@ -371,14 +380,14 @@ class _SpreadsheetState extends State<Spreadsheet> {
                                 ),
                                 DataCell(
                                   IconButton(
-                                    icon: Icon(Icons.delete),
+                                    icon: const Icon(Icons.delete),
                                     onPressed: () => _deleteOtherExpenseRow(index),
                                   ),
                                 ),
                               ]);
                             }),
                           ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -388,16 +397,16 @@ class _SpreadsheetState extends State<Spreadsheet> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: _saveData,
-                  icon: Icon(Icons.save, color: Colors.white),
-                  label: Text(
+                  icon: const Icon(Icons.save, color: Colors.white),
+                  label: const Text(
                     'Save',
                     style: TextStyle(
                       color: Colors.white,
@@ -405,7 +414,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffa4392f),
+                    backgroundColor: const Color(0xffa4392f),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
@@ -417,9 +426,9 @@ class _SpreadsheetState extends State<Spreadsheet> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         onPressed: _addNewRow,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

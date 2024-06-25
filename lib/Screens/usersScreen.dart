@@ -45,7 +45,7 @@ class _UsersScreenState extends State<UsersScreen> {
         );
       }).toList();
     } catch (error) {
-      print('Error fetching customers: $error');
+      // print('Error fetching customers: $error');
     }
 
     setState(() {
@@ -63,7 +63,7 @@ class _UsersScreenState extends State<UsersScreen> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -71,7 +71,7 @@ class _UsersScreenState extends State<UsersScreen> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         title: Text(
           'Users',
           style: GoogleFonts.poppins(
@@ -82,24 +82,24 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         onPressed: () {
           // Add functionality to add new customers here
         },
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: ModalProgressHUD(
-        progressIndicator: CircularProgressIndicator(
+        progressIndicator: const CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
           strokeWidth: 5.0, // Adjust spinner thickness if needed
         ),
         inAsyncCall: showSpinner,
         child: RefreshIndicator(
           onRefresh: _handleRefresh,
-          color: Color(0xffa4392f), // Change refresh indicator color to theme color
+          color: const Color(0xffa4392f), // Change refresh indicator color to theme color
           backgroundColor: Colors.grey[200], // Change background color of refresh indicator
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
                 Padding(
@@ -118,7 +118,7 @@ class _UsersScreenState extends State<UsersScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -129,15 +129,15 @@ class _UsersScreenState extends State<UsersScreen> {
                   ),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       final user = users[index];
-                      return infoCard(
+                      return InfoCard(
                         name: user.name,
                         company: user.email,
                         onpress: () {
-                          print(user.name);
+                          // print(user.name);
                         },
                         initial: user.initial,
                         customerId: '', // Assuming this is needed for the infoCard widget

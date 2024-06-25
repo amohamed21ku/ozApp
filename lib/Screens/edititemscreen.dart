@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Widgets/mycard.dart';
 
 class EditItemScreen extends StatefulWidget {
-  const EditItemScreen({Key? key}) : super(key: key);
+  const EditItemScreen({super.key});
 
   @override
   _EditItemScreenState createState() => _EditItemScreenState();
@@ -108,7 +108,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
       await fetchDataFromFirestore();
       await saveDataToSharedPreferences();
     } catch (e) {
-      print('Error saving changes: $e');
+      // print('Error saving changes: $e');
     } finally {
       // setState(() => isLoading = false);
     }
@@ -211,7 +211,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
             .doc(filteredList[index]['documentId'])
             .delete();
       } catch (e) {
-        print('Error deleting item: $e');
+        // print('Error deleting item: $e');
         // Handle error if deletion fails
       }
     }
@@ -312,13 +312,13 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                 icon: Icon(
                                   size: 20,
                                   showDateColumn ? Icons.visibility_off : Icons.visibility,
-                                  color: Color(0xffa4392f),
+                                  color: const Color(0xffa4392f),
                                 ),
                               ),
                               Text(
                                 showDateColumn ? 'Hide Date' : 'Show Date',
                                 style: GoogleFonts.poppins(
-                                  color: Color(0xffa4392f),
+                                  color: const Color(0xffa4392f),
                                   fontSize: 12, // Adjust font size as needed
                                 ),
                               ),
@@ -423,8 +423,8 @@ class _EditItemScreenState extends State<EditItemScreen> {
       floatingActionButton:
           FloatingActionButton(
             onPressed: addNewItem,
-            child: Icon(Icons.add, color: Colors.white),
-            backgroundColor: Color(0xffa4392f),
+            backgroundColor: const Color(0xffa4392f),
+            child: const Icon(Icons.add, color: Colors.white),
           ),
       //     // SizedBox(height: 10),
       //     // FloatingActionButton(

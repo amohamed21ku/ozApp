@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -6,21 +5,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:oz/Screens/homeScreen.dart';
-import 'package:oz/models/user.dart';
+// import 'package:oz/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components.dart';
 import '../constants.dart';
 import '../models/components/square_tile.dart';
 
-class loginScreen extends StatefulWidget {
-  loginScreen({Key? key}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<loginScreen> createState() => _loginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _loginScreenState extends State<loginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   bool showSpinner = false;
   String username = '';
   String pass = '';
@@ -34,7 +33,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    check_if_already_login();
+    checkIfAlreadyLogin();
     // controller = AnimationController(
     //   vsync: this,
     //   duration: Duration(seconds: 1),
@@ -48,10 +47,6 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
   //   });
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   void _signInWithGoogle() async {
     setState(() {
@@ -74,13 +69,13 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
         final snapshot = await FirebaseFirestore.instance.collection('residents').where('email', isEqualTo: user!.email).get();
 
         if (snapshot.docs.isNotEmpty) {
-          final currentUser = myUser(
-            username: user.uid,
-            email: '', password:'' , name: '', initial: '',
-            // add other necessary fields
-          );
+          // final currentUser = myUser(
+          //   username: user.uid,
+          //   email: '', password:'' , name: '', initial: '',
+          //   // add other necessary fields
+          // );
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => homeScreen(),
+            builder: (context) => const HomeScreen(),
           ));
         }
 
@@ -89,7 +84,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
         });
       }
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
       setState(() {
         showSpinner = false;
       });
@@ -102,7 +97,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -114,7 +109,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: ModalProgressHUD(
-                  progressIndicator: CircularProgressIndicator(
+                  progressIndicator: const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to red
                     strokeWidth: 5.0, // Adjust spinner thickness if needed
                   ),
@@ -123,8 +118,8 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
                       children: <Widget>[
-                        SizedBox(height: 40,),
-                        Container(
+                        const SizedBox(height: 40,),
+                        SizedBox(
                           height: 70,
                           child: Hero(
                             tag: 'logo',
@@ -133,7 +128,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                             ),
                           ),
                         ),
-                        SizedBox(height: 30,),
+                        const SizedBox(height: 30,),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -155,7 +150,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                     fontSize: 12,
                                   ),
                                 ),
-                                SizedBox(height: 20,),
+                                const SizedBox(height: 20,),
                               ],
                             ),
                           ],
@@ -172,17 +167,17 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                 },
                                 decoration: kTextfielDecoration.copyWith(
                                   hintText: "Enter your Username",
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.perm_identity,
                                     color: Colors.grey,
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Increase padding
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Increase padding
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10), // Rounded border
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20.0, // Increase spacing
                               ),
                               TextField(
@@ -193,21 +188,21 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                 },
                                 decoration: kTextfielDecoration.copyWith(
                                   hintText: "Enter your Password",
-                                  prefixIcon: Icon(
+                                  prefixIcon: const Icon(
                                     Icons.lock,
                                     color: Colors.grey,
                                   ),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Increase padding
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20), // Increase padding
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10), // Rounded border
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20,),
+                              const SizedBox(height: 20,),
 
                               RoundedButton(
                                 title: 'Login',
-                                colour: Color(0xffa4392f),
+                                colour: const Color(0xffa4392f),
 
                                 onPressed: () async {
                                   setState(() {
@@ -223,31 +218,31 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
 
                                     if (snapshot.docs.isNotEmpty) {
                                       final userData = snapshot.docs.first.data();
-                                      final currentUser = myUser(
-                                        name: userData['name'],
-                                        email: userData['email'],
-                                        username: userData['username'],
-                                        password: userData['password'], initial: '${userData['name'][0]}',
-                                      );
+                                      // final currentUser = myUser(
+                                      //   name: userData['name'],
+                                      //   email: userData['email'],
+                                      //   username: userData['username'],
+                                      //   password: userData['password'], initial: '${userData['name'][0]}',
+                                      // );
                                       logindata.setBool('login', false);
                                       logindata.setString('username', userData['username']);
                                       logindata.setString('password', userData['password']);
                                       logindata.setString('name', userData['name']);
                                       logindata.setString('email', userData['email']);
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => homeScreen()));
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
 
                                       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => homeScreen()));
                                     } else {
                                       // Handle the case where no matching user is found
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Invalid username or password')),
+                                        const SnackBar(content: Text('Invalid username or password')),
                                       );
                                     }
                                     setState(() {
                                       showSpinner = false;
                                     });
                                   } catch (e) {
-                                    print('Error: $e');
+                                    // print('Error: $e');
                                     setState(() {
                                       showSpinner = false;
                                     });
@@ -274,13 +269,13 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                       style: GoogleFonts.poppins(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xffa4392f),
+                                        color: const Color(0xffa4392f),
                                       ),
                                     )
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 30,),
+                              const SizedBox(height: 30,),
                               Row(
                                 children: [
                                   Expanded(
@@ -304,7 +299,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 20,),
+                              const SizedBox(height: 20,),
                               Expanded(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -315,7 +310,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                         // google button
                                         SquareTile(imagePath: 'images/google.png', ontap: _signInWithGoogle,),
 
-                                        SizedBox(width: 40),
+                                        const SizedBox(width: 40),
 
                                         // apple button
                                         SquareTile(imagePath: 'images/apple.png', ontap: () {},)
@@ -339,12 +334,12 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
     );
   }
 
-  Future<void> check_if_already_login() async {
+  Future<void> checkIfAlreadyLogin() async {
     logindata = await SharedPreferences.getInstance();
     isnew = (logindata.getBool('login') ?? true);
     print("new user");
     if(isnew == false){
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => homeScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     }
   }
 }

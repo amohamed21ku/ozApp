@@ -17,7 +17,7 @@ class SelectedItemScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -25,27 +25,27 @@ class SelectedItemScreen extends StatelessWidget {
               'Kodu: ${selectedItem['kodu']}',
               style: GoogleFonts.poppins(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Name: ${selectedItem['sItemName']}',
               style: GoogleFonts.poppins(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Eni: ${selectedItem['eni']}',
               style: GoogleFonts.poppins(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Gramaj: ${selectedItem['gramaj']}',
               style: GoogleFonts.poppins(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'USD: ${selectedItem['pricesAndDates']}',
               style: GoogleFonts.poppins(fontSize: 18),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Tarih: ${selectedItem['Tarih']}',
               style: GoogleFonts.poppins(fontSize: 18),

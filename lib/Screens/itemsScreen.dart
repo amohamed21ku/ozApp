@@ -10,7 +10,7 @@ import 'edititemscreen.dart';
 import 'itemDetails.dart';
 
 class ItemsScreen extends StatefulWidget {
-  const ItemsScreen({Key? key}) : super(key: key);
+  const ItemsScreen({super.key});
 
   @override
   _ItemsScreenState createState() => _ItemsScreenState();
@@ -85,7 +85,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -172,13 +172,13 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                   showDateColumn
                                       ? Icons.visibility_off
                                       : Icons.visibility,
-                                  color: Color(0xffa4392f),
+                                  color: const Color(0xffa4392f),
                                 ),
                               ),
                               Text(
                                 showDateColumn ? 'Hide Date' : 'Show Date',
                                 style: GoogleFonts.poppins(
-                                  color: Color(0xffa4392f),
+                                  color: const Color(0xffa4392f),
                                   fontSize:
                                   14, // Adjust font size as needed
                                 ),

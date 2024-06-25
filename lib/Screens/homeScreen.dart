@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:oz/Screens/loginScreen.dart';
+import 'package:oz/Screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Widgets/todo.dart';
 import '../components.dart';
 import '../models/user.dart';
 
-class homeScreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   final myUser? currentUser;
 
-  homeScreen({this.currentUser});
+  const HomeScreen({super.key, this.currentUser});
 
   @override
-  _homeScreenState createState() => _homeScreenState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _homeScreenState extends State<homeScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   late SharedPreferences logindata;
   late String username;
   late String password;
   late String name;
   late String email;
-  late myUser current_user;
+  late myUser currentUser;
 
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
 
   @override
@@ -32,9 +32,9 @@ class _homeScreenState extends State<homeScreen> {
     super.initState();
     initial();
     if (widget.currentUser != null) {
-      current_user = widget.currentUser!;
+      currentUser = widget.currentUser!;
     } else {
-      current_user = myUser(
+      currentUser = myUser(
         username: 'default_username',
         password: 'default_password',
         name: 'Default Name',
@@ -51,7 +51,7 @@ class _homeScreenState extends State<homeScreen> {
       password = logindata.getString('password')!;
       email = logindata.getString('email')!;
       name = logindata.getString('name')!;
-      current_user = myUser(username: username, password: password, name: name, email: email, initial: name[0]);
+      currentUser = myUser(username: username, password: password, name: name, email: email, initial: name[0]);
     });
   }
 
@@ -61,7 +61,7 @@ class _homeScreenState extends State<homeScreen> {
     });
     _pageController.animateToPage(
       index,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.ease,
     );
   }
@@ -71,7 +71,7 @@ class _homeScreenState extends State<homeScreen> {
     await prefs.clear(); // Clear all stored data
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => loginScreen()),
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   }
 
@@ -80,7 +80,7 @@ class _homeScreenState extends State<homeScreen> {
     return Scaffold(
       body: PageView(
         controller: _pageController,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           buildHomePage(),
           buildToDoPage(),
@@ -103,7 +103,7 @@ class _homeScreenState extends State<homeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xffa4392f),
+        selectedItemColor: const Color(0xffa4392f),
         onTap: _onItemTapped,
       ),
     );
@@ -112,7 +112,7 @@ class _homeScreenState extends State<homeScreen> {
   Widget buildHomePage() {
     return SafeArea(
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -127,50 +127,48 @@ class _homeScreenState extends State<homeScreen> {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Welcome back,',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black38,
-                                ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Welcome back,',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black38,
                               ),
-                              Text(
-                                current_user.name,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w700,
-                                ),
+                            ),
+                            Text(
+                              currentUser.name,
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                color: Colors.black54,
+                                fontWeight: FontWeight.w700,
                               ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              _onItemTapped(2);
-                            },
-                            child: Container(
-                              alignment: Alignment.topRight,
-                              child: Hero(
-                                tag: 'profile_pic',
-                                child: CircleAvatar(
-                                  radius: 30.0,
-                                  backgroundImage: AssetImage('images/profile.jpg'),
-                                ),
+                            ),
+                          ],
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            _onItemTapped(2);
+                          },
+                          child: Container(
+                            alignment: Alignment.topRight,
+                            child: const Hero(
+                              tag: 'profile_pic',
+                              child: CircleAvatar(
+                                radius: 30.0,
+                                backgroundImage: AssetImage('images/profile.jpg'),
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       children: [
                         Expanded(
@@ -183,11 +181,11 @@ class _homeScreenState extends State<homeScreen> {
                             width: 10,
                             height: 100,
                             icon: Icons.list_alt,
-                            iconColor: Color(0xffa4392f),
+                            iconColor: const Color(0xffa4392f),
                             textcolor: Colors.black,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: RoundedButtonSmall(
                             colour: Colors.white,
@@ -198,7 +196,7 @@ class _homeScreenState extends State<homeScreen> {
                             width: 0,
                             height: 100,
                             icon: Icons.person,
-                            iconColor: Color(0xffa4392f),
+                            iconColor: const Color(0xffa4392f),
                             textcolor: Colors.black,
                           ),
                         ),
@@ -217,11 +215,11 @@ class _homeScreenState extends State<homeScreen> {
                             width: 10,
                             height: 100,
                             icon: Icons.newspaper,
-                            iconColor: Color(0xffa4392f),
+                            iconColor: const Color(0xffa4392f),
                             textcolor: Colors.black,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: RoundedButtonSmall(
                             colour: Colors.white,
@@ -233,7 +231,7 @@ class _homeScreenState extends State<homeScreen> {
                             width: 0,
                             height: 100,
                             icon: Icons.supervised_user_circle_outlined,
-                            iconColor: Color(0xffa4392f),
+                            iconColor: const Color(0xffa4392f),
                             textcolor: Colors.black,
                           ),
                         ),
@@ -243,7 +241,7 @@ class _homeScreenState extends State<homeScreen> {
                       child: Column(
                         children: [
                           RoundedButtonSmall(
-                            colour: Color(0xffa4392f),
+                            colour: const Color(0xffa4392f),
                             title: 'Add requested Sample by Customer',
                             onPressed: () {
                               Navigator.pushNamed(context, "customerscreen");
@@ -255,7 +253,7 @@ class _homeScreenState extends State<homeScreen> {
                             textcolor: Colors.white,
                           ),
                           RoundedButtonSmall(
-                            colour: Color(0xffa4392f),
+                            colour: const Color(0xffa4392f),
                             title: 'Add given Sample',
                             onPressed: () {
                               // Navigate to advanced search page
@@ -267,7 +265,7 @@ class _homeScreenState extends State<homeScreen> {
                             textcolor: Colors.white,
                           ),
                           RoundedButtonSmall(
-                            colour: Color(0xffa4392f),
+                            colour: const Color(0xffa4392f),
                             title: 'Random Data',
                             onPressed: () {
                               // Navigate to query screen
@@ -304,7 +302,7 @@ class _homeScreenState extends State<homeScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         elevation: 0,
         automaticallyImplyLeading: false, // This line removes the default arrow icon
       ),
@@ -315,37 +313,37 @@ class _homeScreenState extends State<homeScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 20),
-              Hero(
+              const SizedBox(height: 20),
+              const Hero(
                 tag: 'profile_pic',
                 child: CircleAvatar(
                   radius: 80,
                   backgroundImage: AssetImage('images/profile.jpg'),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
-                current_user.name,
+                currentUser.name,
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
-                current_user.email,
+                currentUser.email,
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.grey[600],
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () => _logout(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffa4392f),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  backgroundColor: const Color(0xffa4392f),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

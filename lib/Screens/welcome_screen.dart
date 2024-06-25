@@ -1,18 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import '../components.dart';
 
-class welcomeScreen extends StatefulWidget {
-  welcomeScreen({super.key});
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
 
   @override
-  State<welcomeScreen> createState() => _welcomeScreenState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _welcomeScreenState extends State<welcomeScreen>
+class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
@@ -22,13 +20,13 @@ class _welcomeScreenState extends State<welcomeScreen>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: const Duration(seconds: 1),
     );
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
     controller.forward();
 
     // Timer to navigate to loginScreen after 3 seconds
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacementNamed(context, 'loginscreen');
     });
   }
@@ -44,7 +42,7 @@ class _welcomeScreenState extends State<welcomeScreen>
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,

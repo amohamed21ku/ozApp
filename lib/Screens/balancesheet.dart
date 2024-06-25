@@ -126,7 +126,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                     itemCount: customers.length,
                     itemBuilder: (context, index) {
                       final customer = customers[index];
-                      return infoCard(
+                      return InfoCard(
                         name: customer.name,
                         company: customer.company,
                         onpress: () {

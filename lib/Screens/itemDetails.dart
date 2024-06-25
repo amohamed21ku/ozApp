@@ -6,8 +6,7 @@ class ItemDetailsScreen extends StatefulWidget {
   final Map<String, dynamic> item;
   final String docId; // Document ID
 
-  const ItemDetailsScreen({Key? key, required this.item, required this.docId})
-      : super(key: key);
+  const ItemDetailsScreen({super.key, required this.item, required this.docId});
 
   @override
   _ItemDetailsScreenState createState() => _ItemDetailsScreenState();
@@ -59,7 +58,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
 
       // Show success message or navigate back
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Item updated successfully'),
         ),
       );
@@ -107,42 +106,42 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Item'),
+        title: const Text('Edit Item'),
         actions: [
           IconButton(
             onPressed: updateItemData,
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: koduController,
-              decoration: InputDecoration(labelText: 'Kodu'),
+              decoration: const InputDecoration(labelText: 'Kodu'),
             ),
             TextField(
               controller: nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
             TextField(
               controller: eniController,
-              decoration: InputDecoration(labelText: 'Eni'),
+              decoration: const InputDecoration(labelText: 'Eni'),
             ),
             TextField(
               controller: gramajController,
-              decoration: InputDecoration(labelText: 'Gramaj'),
+              decoration: const InputDecoration(labelText: 'Gramaj'),
             ),
             TextField(
               controller: currentPriceController,
-              decoration: InputDecoration(labelText: 'Current Price'),
+              decoration: const InputDecoration(labelText: 'Current Price'),
             ),
             TextField(
               controller: currentDateController,
-              decoration: InputDecoration(labelText: 'Current Date'),
+              decoration: const InputDecoration(labelText: 'Current Date'),
             ),
             const SizedBox(height: 20),
             Text(
@@ -152,9 +151,9 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             DataTable(
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Date')),
                 DataColumn(label: Text('Price')),
                 DataColumn(label: Text('Actions')),
@@ -185,7 +184,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     ),
                     DataCell(
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () => removePrice(index),
                       ),
                     ),
@@ -198,7 +197,7 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
                     Center(
                       child: ElevatedButton(
                         onPressed: addNewPrice,
-                        child: Text('Add Price'),
+                        child: const Text('Add Price'),
                       ),
                     ),
                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ToDoPage extends StatefulWidget {
+  const ToDoPage({super.key});
+
   @override
   _ToDoPageState createState() => _ToDoPageState();
 }
@@ -35,7 +37,7 @@ class _ToDoPageState extends State<ToDoPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('To-Do List',style: GoogleFonts.poppins(color: Colors.white),),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         automaticallyImplyLeading: false, // This line removes the default arrow icon
 
       ),
@@ -75,7 +77,7 @@ class _ToDoPageState extends State<ToDoPage> {
                   children: [
                     Expanded(
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Add Task',
                         ),
                         onSubmitted: (task) {
@@ -84,7 +86,7 @@ class _ToDoPageState extends State<ToDoPage> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.add),
+                      icon: const Icon(Icons.add),
                       onPressed: () {
                         final taskController = TextEditingController();
                         showDialog(
@@ -93,21 +95,21 @@ class _ToDoPageState extends State<ToDoPage> {
                             title: Text('Add Task for $user'),
                             content: TextField(
                               controller: taskController,
-                              decoration: InputDecoration(hintText: 'Enter task'),
+                              decoration: const InputDecoration(hintText: 'Enter task'),
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                child: Text('Cancel'),
+                                child: const Text('Cancel'),
                               ),
                               TextButton(
                                 onPressed: () {
                                   _addTask(user, taskController.text);
                                   Navigator.pop(context);
                                 },
-                                child: Text('Add'),
+                                child: const Text('Add'),
                               ),
                             ],
                           ),

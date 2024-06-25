@@ -28,7 +28,7 @@ class _profileScreenState extends State<profileScreen> {
             color: Colors.white,
           ),
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         elevation: 0,
       ),
       backgroundColor: Colors.white,
@@ -36,7 +36,7 @@ class _profileScreenState extends State<profileScreen> {
         stream: _userStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -44,7 +44,7 @@ class _profileScreenState extends State<profileScreen> {
           }
 
           if (!snapshot.hasData || snapshot.data == null) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           }
 
           var userData = snapshot.data!.data();
@@ -58,7 +58,7 @@ class _profileScreenState extends State<profileScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Hero(
                     tag: 'profile_pic',
                     child: CircleAvatar(
@@ -66,7 +66,7 @@ class _profileScreenState extends State<profileScreen> {
                       backgroundImage: profilePicture =NetworkImage(profilePicture)
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Text(
                     username,
                     style: GoogleFonts.poppins(
@@ -75,7 +75,7 @@ class _profileScreenState extends State<profileScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     email,
                     style: GoogleFonts.poppins(
@@ -83,14 +83,14 @@ class _profileScreenState extends State<profileScreen> {
                       color: Colors.grey[600],
                     ),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
                       // Logout logic here
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffa4392f),
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      backgroundColor: const Color(0xffa4392f),
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),

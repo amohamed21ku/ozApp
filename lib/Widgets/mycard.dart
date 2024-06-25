@@ -17,7 +17,7 @@ class MyCard extends StatefulWidget {
   final bool yardage;
   final bool hanger;
 
-  MyCard({
+  const MyCard({super.key,
     required this.onChangedKodu,
     required this.onChangedName,
     required this.onChangedDate,
@@ -94,9 +94,9 @@ class _MyCardState extends State<MyCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -106,34 +106,34 @@ class _MyCardState extends State<MyCard> {
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Kodu',
-                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
+                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: const Color(0xffa4392f)),
                       isDense: true,
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffa4392f)),
                       ),
                     ),
-                    cursorColor: Color(0xffa4392f),
+                    cursorColor: const Color(0xffa4392f),
                     controller: _koduController,
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Name',
-                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
+                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: const Color(0xffa4392f)),
                       isDense: true,
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffa4392f)),
                       ),
                     ),
-                    cursorColor: Color(0xffa4392f),
+                    cursorColor: const Color(0xffa4392f),
                     controller: _nameController,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -143,36 +143,36 @@ class _MyCardState extends State<MyCard> {
                       child: TextField(
                         decoration: InputDecoration(
                           labelText: 'Date',
-                          labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
+                          labelStyle: GoogleFonts.poppins(fontSize: 14, color: const Color(0xffa4392f)),
                           isDense: true,
-                          focusedBorder: UnderlineInputBorder(
+                          focusedBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(color: Color(0xffa4392f)),
                           ),
                         ),
-                        cursorColor: Color(0xffa4392f),
+                        cursorColor: const Color(0xffa4392f),
                         controller: _dateController,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'Price',
-                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: Color(0xffa4392f)),
+                      labelStyle: GoogleFonts.poppins(fontSize: 14, color: const Color(0xffa4392f)),
                       isDense: true,
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffa4392f)),
                       ),
                     ),
-                    cursorColor: Color(0xffa4392f),
+                    cursorColor: const Color(0xffa4392f),
                     controller: _priceController,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Row(
               children: [
                 Expanded(
@@ -186,7 +186,7 @@ class _MyCardState extends State<MyCard> {
                             _yardage = value ?? false;
                           });
                         },
-                        activeColor: Color(0xffa4392f),
+                        activeColor: const Color(0xffa4392f),
                       ),
                       Text(
                         'Yardage',
@@ -206,7 +206,7 @@ class _MyCardState extends State<MyCard> {
                             _hanger = value ?? false;
                           });
                         },
-                        activeColor: Color(0xffa4392f),
+                        activeColor: const Color(0xffa4392f),
                       ),
                       Text(
                         'Hanger',
@@ -216,7 +216,7 @@ class _MyCardState extends State<MyCard> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   onPressed: widget.onPressedDelete,
                 ),
               ],
@@ -236,8 +236,8 @@ class _MyCardState extends State<MyCard> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(primary: Color(0xffa4392f)),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            colorScheme: const ColorScheme.light(primary: Color(0xffa4392f)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -270,7 +270,7 @@ class MyCard2 extends StatefulWidget {
   final String price;
   final String date;
 
-  MyCard2({
+  const MyCard2({super.key,
     required this.onChangedKodu,
     required this.onChangedName,
     required this.onChangedEni,
@@ -357,9 +357,9 @@ class _MyCard2State extends State<MyCard2> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -367,62 +367,62 @@ class _MyCard2State extends State<MyCard2> {
               children: [
           Expanded(
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     isDense: true,
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(0xffa4392f)),
                     ),
                   ),
-                  cursorColor: Color(0xffa4392f),
+                  cursorColor: const Color(0xffa4392f),
                   controller: _koduController,
                 ),
               ),
     Expanded(
           child: TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               isDense: true,
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Color(0xffa4392f)),
               ),
             ),
-            cursorColor: Color(0xffa4392f),
+            cursorColor: const Color(0xffa4392f),
             controller: _nameController,
           ),
         ),
     Expanded(
           child: TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               isDense: true,
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Color(0xffa4392f)),
               ),
             ),
-            cursorColor: Color(0xffa4392f),
+            cursorColor: const Color(0xffa4392f),
             controller: _eniController,
           ),
         ),
         Expanded(
           child: TextField(
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               isDense: true,
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Color(0xffa4392f)),
               ),
             ),
-            cursorColor: Color(0xffa4392f),
+            cursorColor: const Color(0xffa4392f),
             controller: _gramajController,
           ),
         ),
 
                     Expanded(
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           isDense: true,
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Color(0xffa4392f)),
                           ),
                         ),
-                        cursorColor: Color(0xffa4392f),
+                        cursorColor: const Color(0xffa4392f),
                         controller: _priceController,
                       ),
                     ),
@@ -432,13 +432,13 @@ class _MyCard2State extends State<MyCard2> {
                         onTap: () => _selectDate(context),
                         child: AbsorbPointer(
                           child: TextField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               isDense: true,
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Color(0xffa4392f)),
                               ),
                             ),
-                            cursorColor: Color(0xffa4392f),
+                            cursorColor: const Color(0xffa4392f),
                             controller: _dateController,
                           ),
                         ),
@@ -577,8 +577,8 @@ class _MyCard2State extends State<MyCard2> {
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: ColorScheme.light(primary: Color(0xffa4392f)),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            colorScheme: const ColorScheme.light(primary: Color(0xffa4392f)),
+            buttonTheme: const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -612,8 +612,8 @@ class EditCard extends StatelessWidget {
     required this.onDelete,
     required this.selectDate,
     required this.confirmDeleteItem,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

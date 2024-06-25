@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class infoCard extends StatelessWidget {
+class InfoCard extends StatelessWidget {
   final VoidCallback onpress;
   final String name;
   final IconData icon;
   final String company;
-  late var Prof_icon;
+  late var profIcon;
   final String initial;
   final String customerId; // Add customerId to uniquely identify customers
 
-  infoCard({
+  InfoCard({super.key,
     this.icon = Icons.person,
     required this.name,
     required this.company,
@@ -24,20 +24,20 @@ class infoCard extends StatelessWidget {
     try {
       await FirebaseFirestore.instance.collection('customers').doc(customerId).delete();
     } catch (e) {
-      print('Error deleting customer: $e');
+      // print('Error deleting customer: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting customer')),
+        const SnackBar(content: Text('Error deleting customer')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this.name == "") {
-      Prof_icon = Icon(Icons.person);
+    if (name == "") {
+      profIcon = const Icon(Icons.person);
     } else {
-      Prof_icon = Text(
-        '$initial',
+      profIcon = Text(
+        initial,
         style: GoogleFonts.poppins(
           color: Colors.white,
           fontSize: 16,
@@ -57,7 +57,7 @@ class infoCard extends StatelessWidget {
               title: Text(
                 'Confirm Delete',
                 style: GoogleFonts.poppins(
-                  color: Color(0xffa4392f), // Specify the color
+                  color: const Color(0xffa4392f), // Specify the color
                 ),
               ),
               content: Text(
@@ -72,7 +72,7 @@ class infoCard extends StatelessWidget {
                   child: Text(
                     'No',
                     style: GoogleFonts.poppins(
-                      color: Color(0xffa4392f), // Specify the color
+                      color: const Color(0xffa4392f), // Specify the color
                     ),
                   ),
                 ),
@@ -83,7 +83,7 @@ class infoCard extends StatelessWidget {
                   child: Text(
                     'Yes',
                     style: GoogleFonts.poppins(
-                      color: Color(0xffa4392f), // Specify the color
+                      color: const Color(0xffa4392f), // Specify the color
                     ),
                   ),
                 ),
@@ -102,9 +102,9 @@ class infoCard extends StatelessWidget {
       },
       background: Container(
         color: Colors.red,
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.centerRight,
-        child: Icon(Icons.delete, color: Colors.white),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: GestureDetector(
         onTap: onpress,
@@ -112,8 +112,8 @@ class infoCard extends StatelessWidget {
           elevation: 6, // Add elevation to the whole container
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(bottom: 5),
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 5),
             height: 70,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -126,17 +126,17 @@ class infoCard extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      child: Prof_icon,
-                      backgroundColor: Color(0xffa4392f),
+                      child: profIcon,
+                      backgroundColor: const Color(0xffa4392f),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 15,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${this.name}',
+                          name,
                           style: GoogleFonts.poppins(
                             color: Colors.black,
                             fontSize: 12,
@@ -144,7 +144,7 @@ class infoCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '${this.company}',
+                          company,
                           style: GoogleFonts.poppins(
                             fontSize: 10,
                             fontWeight: FontWeight.w300,
@@ -154,7 +154,7 @@ class infoCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Icon(
+                const Icon(
                   Icons.arrow_forward_ios,
                   size: 15,
                 )

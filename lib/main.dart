@@ -7,16 +7,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Screens/balancesheet.dart';
 import 'Screens/customerScreen.dart';
 import 'Screens/homeScreen.dart';
-import 'Screens/loginScreen.dart';
+import 'Screens/login_screen.dart';
 import 'Screens/profileScreen.dart';
-import 'Screens/welcomeScreen.dart';
+import 'Screens/welcome_screen.dart';
 
 Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
+    options: const FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
         appId: "1:648146955193:android:50dc26b187ddce90022468",
         messagingSenderId: "648146955193",
         projectId: "ozapp-310aa")
@@ -31,7 +31,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   final bool isNew;
 
-  const MyApp({Key? key, required this.isNew}) : super(key: key);
+  const MyApp({super.key, required this.isNew});
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +39,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(),
       initialRoute: isNew ? 'welcomescreen' : 'homescreen',
       routes: {
-        "welcomescreen": (context) => welcomeScreen(),
-        "loginscreen": (context) => loginScreen(),
-        "homescreen": (context) => homeScreen(),
-        "itemsscreen": (context) => ItemsScreen(),
+        "welcomescreen": (context) => const WelcomeScreen(),
+        "loginscreen": (context) => const LoginScreen(),
+        "homescreen": (context) => const HomeScreen(),
+        "itemsscreen": (context) => const ItemsScreen(),
         "profilescreen": (context) => profileScreen(),
-        "customerscreen": (context) => CustomerScreen(),
-        "balancesheet": (context) => BalanceSheet(),
-        "usersscreen": (context) => UsersScreen(),
+        "customerscreen": (context) => const CustomerScreen(),
+        "balancesheet": (context) => const BalanceSheet(),
+        "usersscreen": (context) => const UsersScreen(),
       },
     );
   }

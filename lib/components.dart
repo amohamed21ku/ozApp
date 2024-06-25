@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class RoundedButton extends StatelessWidget {
   const RoundedButton(
-      {required this.colour,
+      {super.key, required this.colour,
         required this.title,
         required this.onPressed,
 
@@ -18,7 +18,7 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 10.0,
         color: colour,
@@ -37,7 +37,7 @@ class RoundedButton extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
               Icon(
@@ -54,10 +54,10 @@ class RoundedButton extends StatelessWidget {
 }
 
 class MY_textField extends StatelessWidget {
-  final String hint_text;
+  final String hintText;
   var onchange;
   final double h;
-  MY_textField({required this.hint_text , required this.onchange, required this.h});
+  MY_textField({super.key, required this.hintText , required this.onchange, required this.h});
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +65,13 @@ class MY_textField extends StatelessWidget {
       width: double.infinity,
       height: h,
       decoration: BoxDecoration(
-          color: Color(0xff4E4B4A), borderRadius: BorderRadius.circular(10)),
+          color: const Color(0xff4E4B4A), borderRadius: BorderRadius.circular(10)),
       child: TextField(
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
 
         onChanged: onchange,
         decoration:
-        InputDecoration(border: InputBorder.none, hintText: '$hint_text'),
+        InputDecoration(border: InputBorder.none, hintText: hintText),
         textAlign: TextAlign.center,
       ),
     );
@@ -81,7 +81,7 @@ class MY_textField extends StatelessWidget {
 // -----------------------------------
 
 class RoundedButton2 extends StatelessWidget {
-  const RoundedButton2({
+  const RoundedButton2({super.key,
     required this.colour,
     required this.title,
     required this.onPressed,
@@ -94,7 +94,7 @@ class RoundedButton2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 5.0,
         color: colour,
@@ -113,7 +113,7 @@ class RoundedButton2 extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
             ],
@@ -128,7 +128,7 @@ class RoundedButton2 extends StatelessWidget {
 
 class RoundedButton_withicon extends StatelessWidget {
   const RoundedButton_withicon(
-      {required this.colour,
+      {super.key, required this.colour,
         required this.title,
         required this.onPressed,
         required this.icon});
@@ -141,7 +141,7 @@ class RoundedButton_withicon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 5.0,
         color: colour,
@@ -160,7 +160,7 @@ class RoundedButton_withicon extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
               icon,
@@ -179,7 +179,7 @@ class myiconbutton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color color;
   const  myiconbutton(
-      {required this.icon,
+      {super.key, required this.icon,
         required this.title,
         required this.onPressed,
         required this.color
@@ -198,7 +198,7 @@ class myiconbutton extends StatelessWidget {
           onPressed: onPressed,
         ),
         Text(
-          '$title',
+          title,
           style: GoogleFonts.poppins(fontSize: 14),
         )
       ],
@@ -210,7 +210,7 @@ class myiconbutton extends StatelessWidget {
 // =================================
 
 class RoundedButtonSmall extends StatelessWidget {
-  const RoundedButtonSmall({
+  const RoundedButtonSmall({super.key,
     required this.colour,
     required this.title,
     required this.onPressed,
@@ -234,7 +234,7 @@ class RoundedButtonSmall extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 8.0,
         color: colour,
@@ -247,7 +247,7 @@ class RoundedButtonSmall extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon,color: iconColor,),
-              SizedBox(width: 10,),
+              const SizedBox(width: 10,),
               Text(
                 title,
                 style: GoogleFonts.poppins(
@@ -255,7 +255,7 @@ class RoundedButtonSmall extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
             ],
@@ -270,7 +270,7 @@ class RoundedButtonSmall extends StatelessWidget {
 //=====================================================================
 
 class RoundedButtonSmall_Sharb extends StatelessWidget {
-  const RoundedButtonSmall_Sharb({
+  const RoundedButtonSmall_Sharb({super.key,
     required this.colour,
     required this.title,
     required this.onPressed,
@@ -294,7 +294,7 @@ class RoundedButtonSmall_Sharb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 5.0,
         color: colour,
@@ -306,7 +306,7 @@ class RoundedButtonSmall_Sharb extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon,color: iconColor,),
-              SizedBox(width: 10,),
+              const SizedBox(width: 10,),
               Text(
                 title,
                 style: GoogleFonts.poppins(
@@ -314,7 +314,7 @@ class RoundedButtonSmall_Sharb extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 7,
               ),
             ],

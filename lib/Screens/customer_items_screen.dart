@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +8,7 @@ import '../models/Customers.dart';
 class CustomerItemsScreen extends StatefulWidget {
   final Customer customer;
 
-  CustomerItemsScreen({required this.customer});
+  const CustomerItemsScreen({super.key, required this.customer});
 
   @override
   _CustomerItemsScreenState createState() => _CustomerItemsScreenState();
@@ -62,7 +61,7 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
         });
       }
     } catch (e) {
-      print('Error fetching data: $e');
+      // print('Error fetching data: $e');
     } finally {
       if (mounted) {
         setState(() => isLoading = false);
@@ -113,9 +112,9 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
           .collection('customers')
           .doc(widget.customer.cid)
           .update({'items': updatedItems});
-      print('Data saved successfully.');
+      // print('Data saved successfully.');
     } catch (e) {
-      print('Error saving data: $e');
+      // print('Error saving data: $e');
     }
   }
 
@@ -124,7 +123,7 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -137,10 +136,10 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
           style: GoogleFonts.poppins(
               fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white),
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
       ),
       body: ModalProgressHUD(
-        progressIndicator: CircularProgressIndicator(
+        progressIndicator: const CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)),
           strokeWidth: 5.0,
         ),
@@ -154,7 +153,7 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
                   'Customer: ${widget.customer.name}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
@@ -209,18 +208,18 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
                 children: [
                   Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(right: 80, bottom: 4),
+                      padding: const EdgeInsets.only(right: 80, bottom: 4),
                       child: ElevatedButton.icon(
                         onPressed: saveData,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xffa4392f),
-                          padding: EdgeInsets.symmetric(vertical: 15.0),
+                          backgroundColor: const Color(0xffa4392f),
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14.0), // Adjust the border radius value as needed
                           ),
                         ),
-                        icon: Icon(Icons.save, color: Colors.white), // Add your desired icon here
-                        label: Text(
+                        icon: const Icon(Icons.save, color: Colors.white), // Add your desired icon here
+                        label: const Text(
                           'Save',
                           style: TextStyle(
                             color: Colors.white,
@@ -238,9 +237,9 @@ class _CustomerItemsScreenState extends State<CustomerItemsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         onPressed: addItem,
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

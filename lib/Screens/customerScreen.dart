@@ -5,10 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Widgets/infocard.dart';
 import '../models/Customers.dart';
-import 'CustomerItemsScreen.dart';
+import 'customer_items_screen.dart';
 
 class CustomerScreen extends StatefulWidget {
-  const CustomerScreen({Key? key}) : super(key: key);
+  const CustomerScreen({super.key});
 
   @override
   State<CustomerScreen> createState() => _CustomerScreenState();
@@ -32,7 +32,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('customers').get();
       customers.clear(); // Clear existing data
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final name = doc['name'] as String;
         final company = doc['company'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
@@ -40,13 +40,13 @@ class _CustomerScreenState extends State<CustomerScreen> {
         final cid = doc.id;
         final goods = doc['goods'];
         customers.add(Customer(name: name, company: company, initial: initial, items: items, cid: cid, goods: goods));
-      });
+      }
 
       // Cache the customer data
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('customers', jsonEncode(customers.map((customer) => customer.toJson()).toList()));
     } catch (error) {
-      print('Error fetching customers: $error');
+      // print('Error fetching customers: $error');
     }
 
     setState(() {
@@ -72,32 +72,32 @@ class _CustomerScreenState extends State<CustomerScreen> {
           title: Text(
             'Add Customer',
             style: GoogleFonts.poppins(
-              color: Color(0xffa4392f), // Title color
+              color: const Color(0xffa4392f), // Title color
             ),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Name',
                   labelStyle: TextStyle(color: Color(0xffa4392f)), // Label color
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffa4392f)), // Underline color when focused
                   ),
                 ),
-                cursorColor: Color(0xffa4392f), // Cursor color
+                cursorColor: const Color(0xffa4392f), // Cursor color
                 onChanged: (value) => name = value,
               ),
               TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Company',
                   labelStyle: TextStyle(color: Color(0xffa4392f)), // Label color
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Color(0xffa4392f)), // Underline color when focused
                   ),
                 ),
-                cursorColor: Color(0xffa4392f), // Cursor color
+                cursorColor: const Color(0xffa4392f), // Cursor color
                 onChanged: (value) => company = value,
               ),
             ],
@@ -110,7 +110,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
               child: Text(
                 'Cancel',
                 style: GoogleFonts.poppins(
-                  color: Color(0xffa4392f), // Button text color
+                  color: const Color(0xffa4392f), // Button text color
                 ),
               ),
             ),
@@ -127,14 +127,14 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 Navigator.of(context).pop(); // Close dialog after adding
                 await fetchCustomers(); // Refresh customer list
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xffa4392f), // Button background color
+              ),
               child: Text(
                 'Add',
                 style: GoogleFonts.poppins(
                   color: Colors.white, // Button text color
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xffa4392f), // Button background color
               ),
             ),
           ],
@@ -149,7 +149,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -157,7 +157,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         title: Text(
           'Customers',
           style: GoogleFonts.poppins(
@@ -168,18 +168,18 @@ class _CustomerScreenState extends State<CustomerScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         onPressed: () => _addCustomer(context),
-        child: Icon(Icons.add, color: Colors.white),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: showSpinner
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
         onRefresh: _handleRefresh,
-        color: Color(0xffa4392f), // Change refresh indicator color to theme color
+        color: const Color(0xffa4392f), // Change refresh indicator color to theme color
         backgroundColor: Colors.grey[200], // Change background color of refresh indicator
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
               Padding(
@@ -198,7 +198,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -211,22 +211,22 @@ class _CustomerScreenState extends State<CustomerScreen> {
                   future: SharedPreferences.getInstance(),
                   builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                     List<Customer> cachedCustomers = [];
                     try {
                       List<dynamic> jsonList = jsonDecode(snapshot.data!.getString('customers')!);
                       cachedCustomers = jsonList.map((item) => Customer.fromJson(item)).toList();
                     } catch (error) {
-                      print('Error decoding cached customers: $error');
+                      // print('Error decoding cached customers: $error');
                     }
                     return ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: cachedCustomers.length,
                       itemBuilder: (context, index) {
                         final customer = cachedCustomers[index];
-                        return infoCard(
+                        return InfoCard(
                           name: customer.name,
                           company: customer.company,
                           onpress: () {
