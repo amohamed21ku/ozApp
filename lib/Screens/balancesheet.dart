@@ -10,7 +10,7 @@ import '../Widgets/infocard.dart';
 import '../models/Customers.dart';
 
 class BalanceSheet extends StatefulWidget {
-  const BalanceSheet({Key? key}) : super(key: key);
+  const BalanceSheet({super.key});
 
   @override
   State<BalanceSheet> createState() => _BalanceSheetState();
@@ -34,17 +34,17 @@ class _BalanceSheetState extends State<BalanceSheet> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('customers').get();
       customers.clear(); // Clear existing data
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         final cid = doc.id;
         final name = doc['name'] as String;
         final company = doc['company'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
         customers.add(Customer(name: name, company: company, initial: initial, items: items, goods: {}, cid: cid));
-        print(doc['items']);
-      });
+        // print(doc['items']);
+      }
     } catch (error) {
-      print('Error fetching customers: $error');
+      // print('Error fetching customers: $error');
     }
 
     setState(() {
@@ -62,7 +62,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.white,
           ),
@@ -70,7 +70,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Color(0xffa4392f),
+        backgroundColor: const Color(0xffa4392f),
         title: Text(
           'Balance Sheet',
           style: GoogleFonts.poppins(
@@ -82,17 +82,17 @@ class _BalanceSheetState extends State<BalanceSheet> {
       ),
 
       body: ModalProgressHUD(
-        progressIndicator: CircularProgressIndicator(
+        progressIndicator: const CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
           strokeWidth: 5.0, // Adjust spinner thickness if needed
         ),
         inAsyncCall: showSpinner,
         child: RefreshIndicator(
           onRefresh: _handleRefresh,
-          color: Color(0xffa4392f), // Change refresh indicator color to theme color
+          color: const Color(0xffa4392f), // Change refresh indicator color to theme color
           backgroundColor: Colors.grey[200], // Change background color of refresh indicator
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
                 Padding(
@@ -111,7 +111,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -122,7 +122,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
                   ),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: customers.length,
                     itemBuilder: (context, index) {
                       final customer = customers[index];

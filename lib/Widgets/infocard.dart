@@ -7,24 +7,25 @@ class InfoCard extends StatelessWidget {
   final String name;
   final IconData icon;
   final String company;
-  late var profIcon;
   final String initial;
   final String customerId; // Add customerId to uniquely identify customers
+  final String? profilePicture; // Add profilePicture field
 
-  InfoCard({super.key,
+  const InfoCard({
+    super.key,
     this.icon = Icons.person,
     required this.name,
     required this.company,
     required this.onpress,
     required this.initial,
     required this.customerId,
+    this.profilePicture,
   });
 
   Future<void> deleteCustomer(BuildContext context) async {
     try {
       await FirebaseFirestore.instance.collection('customers').doc(customerId).delete();
     } catch (e) {
-      // print('Error deleting customer: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error deleting customer')),
       );
@@ -33,15 +34,23 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (name == "") {
-      profIcon = const Icon(Icons.person);
+    Widget profIcon;
+    if (profilePicture != null && profilePicture!.isNotEmpty) {
+      profIcon = CircleAvatar(
+        radius: 20,
+        backgroundImage: NetworkImage(profilePicture!),
+      );
     } else {
-      profIcon = Text(
-        initial,
-        style: GoogleFonts.poppins(
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
+      profIcon = CircleAvatar(
+        radius: 20,
+        backgroundColor: const Color(0xffa4392f),
+        child: Text(
+          initial,
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       );
     }
@@ -89,7 +98,6 @@ class InfoCard extends StatelessWidget {
                 ),
               ],
             );
-
           },
         );
       },
@@ -124,11 +132,7 @@ class InfoCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 20,
-                      child: profIcon,
-                      backgroundColor: const Color(0xffa4392f),
-                    ),
+                    profIcon,
                     const SizedBox(
                       width: 15,
                     ),
@@ -149,7 +153,7 @@ class InfoCard extends StatelessWidget {
                             fontSize: 10,
                             fontWeight: FontWeight.w300,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -157,7 +161,7 @@ class InfoCard extends StatelessWidget {
                 const Icon(
                   Icons.arrow_forward_ios,
                   size: 15,
-                )
+                ),
               ],
             ),
           ),

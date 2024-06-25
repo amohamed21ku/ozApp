@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await prefs.clear(); // Clear all stored data
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => LoginScreen()),
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
   }
 
@@ -290,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildToDoPage() {
-    return ToDoPage();  // Define the ToDoPage below or import it if it's defined elsewhere
+    return const ToDoPage();  // Define the ToDoPage below or import it if it's defined elsewhere
   }
 
   Widget buildProfilePage() {

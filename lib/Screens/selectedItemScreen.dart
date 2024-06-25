@@ -4,8 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class SelectedItemScreen extends StatelessWidget {
   final Map<String, dynamic> selectedItem;
 
-  const SelectedItemScreen({Key? key, required this.selectedItem})
-      : super(key: key);
+  const SelectedItemScreen({super.key, required this.selectedItem});
 
   @override
   Widget build(BuildContext context) {

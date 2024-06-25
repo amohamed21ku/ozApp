@@ -8,7 +8,7 @@ import 'Screens/balancesheet.dart';
 import 'Screens/customerScreen.dart';
 import 'Screens/homeScreen.dart';
 import 'Screens/login_screen.dart';
-import 'Screens/profileScreen.dart';
+import 'Screens/profile_screen.dart';
 import 'Screens/welcome_screen.dart';
 
 Future<void> main() async {
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         "loginscreen": (context) => const LoginScreen(),
         "homescreen": (context) => const HomeScreen(),
         "itemsscreen": (context) => const ItemsScreen(),
-        "profilescreen": (context) => profileScreen(),
+        "profilescreen": (context) => const ProfileScreen(),
         "customerscreen": (context) => const CustomerScreen(),
         "balancesheet": (context) => const BalanceSheet(),
         "usersscreen": (context) => const UsersScreen(),

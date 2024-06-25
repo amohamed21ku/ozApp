@@ -337,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   Future<void> checkIfAlreadyLogin() async {
     logindata = await SharedPreferences.getInstance();
     isnew = (logindata.getBool('login') ?? true);
-    print("new user");
+    // print("new user");
     if(isnew == false){
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     }
