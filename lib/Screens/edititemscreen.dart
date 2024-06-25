@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Widgets/mycard.dart';
 
@@ -23,6 +26,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
   @override
   void initState() {
     super.initState();
+    loadDataFromSharedPreferences();
     fetchDataFromFirestore();
   }
 
@@ -51,6 +55,13 @@ class _EditItemScreenState extends State<EditItemScreen> {
       });
     }
   }
+
+  Future<void> saveDataToSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dataList', json.encode(dataList));
+    await prefs.setString('filteredList', json.encode(filteredList));
+  }
+
 
   Future<void> saveChangesToFirebase() async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
@@ -95,12 +106,25 @@ class _EditItemScreenState extends State<EditItemScreen> {
 
       await batch.commit();
       await fetchDataFromFirestore();
+      await saveDataToSharedPreferences();
     } catch (e) {
       print('Error saving changes: $e');
     } finally {
       // setState(() => isLoading = false);
     }
   }
+
+  Future<void> loadDataFromSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey('dataList')) {
+      dataList = json.decode(prefs.getString('dataList')!);
+    }
+    if (prefs.containsKey('filteredList')) {
+      filteredList = json.decode(prefs.getString('filteredList')!);
+    }
+  }
+
+
 
   Future<void> fetchDataFromFirestore() async {
     setState(() => isLoading = true);
@@ -295,7 +319,7 @@ class _EditItemScreenState extends State<EditItemScreen> {
                                 showDateColumn ? 'Hide Date' : 'Show Date',
                                 style: GoogleFonts.poppins(
                                   color: Color(0xffa4392f),
-                                  fontSize: 14, // Adjust font size as needed
+                                  fontSize: 12, // Adjust font size as needed
                                 ),
                               ),
                             ],

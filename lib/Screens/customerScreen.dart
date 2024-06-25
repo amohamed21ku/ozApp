@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Widgets/infocard.dart';
 import '../models/Customers.dart';
 import 'CustomerItemsScreen.dart';
@@ -41,6 +41,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
         final goods = doc['goods'];
         customers.add(Customer(name: name, company: company, initial: initial, items: items, cid: cid, goods: goods));
       });
+
+      // Cache the customer data
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('customers', jsonEncode(customers.map((customer) => customer.toJson()).toList()));
     } catch (error) {
       print('Error fetching customers: $error');
     }
@@ -53,11 +57,13 @@ class _CustomerScreenState extends State<CustomerScreen> {
   Future<void> _handleRefresh() async {
     await fetchCustomers();
   }
+
   Future<void> _addCustomer(BuildContext context) async {
     String name = '';
     String company = '';
-    Map<String, dynamic> items = {}; // Initialize items map
-    Map<String, dynamic> goods = {}; // Initialize goods map
+    Map goods = {};
+    Map items = {};
+
 
     return showDialog(
       context: context,
@@ -94,14 +100,6 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 cursorColor: Color(0xffa4392f), // Cursor color
                 onChanged: (value) => company = value,
               ),
-              // TextField(
-              //   decoration: InputDecoration(labelText: 'Items'),
-              //   onChanged: (value) => items = jsonDecode(value), // Convert string to map
-              // ),
-              // TextField(
-              //   decoration: InputDecoration(labelText: 'Goods'),
-              //   onChanged: (value) => goods = jsonDecode(value), // Convert string to map
-              // ),
             ],
           ),
           actions: [
@@ -122,8 +120,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 await FirebaseFirestore.instance.collection('customers').add({
                   'name': name,
                   'company': company,
-                  'items': items, // Add items to Firestore
-                  'goods': goods, // Add goods to Firestore
+                  'goods':goods,
+                  'items':items,
                   // Add other fields as needed
                 });
                 Navigator.of(context).pop(); // Close dialog after adding
@@ -141,12 +139,9 @@ class _CustomerScreenState extends State<CustomerScreen> {
             ),
           ],
         );
-
-
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -212,21 +207,37 @@ class _CustomerScreenState extends State<CustomerScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: customers.length,
-                  itemBuilder: (context, index) {
-                    final customer = customers[index];
-                    return infoCard(
-                      name: customer.name,
-                      company: customer.company,
-                      onpress: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => CustomerItemsScreen(customer: customer),
-                        ));
+                child: FutureBuilder(
+                  future: SharedPreferences.getInstance(),
+                  builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    List<Customer> cachedCustomers = [];
+                    try {
+                      List<dynamic> jsonList = jsonDecode(snapshot.data!.getString('customers')!);
+                      cachedCustomers = jsonList.map((item) => Customer.fromJson(item)).toList();
+                    } catch (error) {
+                      print('Error decoding cached customers: $error');
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: cachedCustomers.length,
+                      itemBuilder: (context, index) {
+                        final customer = cachedCustomers[index];
+                        return infoCard(
+                          name: customer.name,
+                          company: customer.company,
+                          onpress: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CustomerItemsScreen(customer: customer),
+                            ));
+                          },
+                          initial: customer.initial,
+                          customerId: customer.cid,
+                        );
                       },
-                      initial: customer.initial, customerId: customer.cid,
                     );
                   },
                 ),
@@ -238,5 +249,3 @@ class _CustomerScreenState extends State<CustomerScreen> {
     );
   }
 }
-
-

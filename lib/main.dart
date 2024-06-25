@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:oz/Screens/itemsScreen.dart';
 import 'package:oz/Screens/usersScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Screens/balancesheet.dart';
 import 'Screens/customerScreen.dart';
@@ -21,32 +22,32 @@ Future<void> main() async {
         projectId: "ozapp-310aa")
   );
 
+  SharedPreferences logindata = await SharedPreferences.getInstance();
+  bool isNew = logindata.getBool('login') ?? true;
 
-      runApp(const MyApp());
+  runApp(MyApp(isNew: isNew));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isNew;
 
-  // This widget is the root of your application.
+  const MyApp({Key? key, required this.isNew}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(),
-    initialRoute: 'welcomescreen',
-    routes: {
-    "welcomescreen": (context) => welcomeScreen(),
-    "loginscreen": (context) => loginScreen(),
-    // "homescreen": (context) => homeScreen(),
-    "itemsscreen": (context) => ItemsScreen(),
-    "profilescreen": (context) => profileScreen(),
-    "customerscreen": (context) => CustomerScreen(),
-    "balancesheet": (context) => BalanceSheet(),
-    "usersscreen": (context) => UsersScreen(),
-
-    },
-
-      home:welcomeScreen(),
+      initialRoute: isNew ? 'welcomescreen' : 'homescreen',
+      routes: {
+        "welcomescreen": (context) => welcomeScreen(),
+        "loginscreen": (context) => loginScreen(),
+        "homescreen": (context) => homeScreen(),
+        "itemsscreen": (context) => ItemsScreen(),
+        "profilescreen": (context) => profileScreen(),
+        "customerscreen": (context) => CustomerScreen(),
+        "balancesheet": (context) => BalanceSheet(),
+        "usersscreen": (context) => UsersScreen(),
+      },
     );
   }
 }

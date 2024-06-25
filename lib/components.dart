@@ -7,15 +7,12 @@ class RoundedButton extends StatelessWidget {
       {required this.colour,
         required this.title,
         required this.onPressed,
-        required this.animation,
-        required this.animation2,
+
         required this.icon});
 
   final Color colour;
   final String title;
   final VoidCallback onPressed;
-  final Animation animation;
-  final Animation animation2;
   final IconData icon;
 
   @override
@@ -24,7 +21,7 @@ class RoundedButton extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: Material(
         elevation: 10.0,
-        color: animation2.value,
+        color: colour,
         borderRadius: BorderRadius.circular(7.0),
         child: MaterialButton(
           onPressed: onPressed,

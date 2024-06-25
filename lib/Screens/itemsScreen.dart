@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'edititemscreen.dart';
 import 'itemDetails.dart';
@@ -23,6 +26,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
   @override
   void initState() {
     super.initState();
+    fetchDataFromCache();
     fetchDataFromFirestore();
   }
 
@@ -42,7 +46,22 @@ class _ItemsScreenState extends State<ItemsScreen> {
 
     filteredList = dataList;
 
+    // Cache the data
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('itemsData', dataList.toString());
+
     setState(() => isLoading = false);
+  }
+
+  Future<void> fetchDataFromCache() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? cachedData = prefs.getString('itemsData');
+    if (cachedData != null) {
+      dataList = List<Map<String, dynamic>>.from(
+        jsonDecode(cachedData).map((item) => Map<String, dynamic>.from(item)),
+      );
+      setState(() => filteredList = dataList);
+    }
   }
 
   void filterData(String query) {
@@ -139,7 +158,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                       children: [
                         Text(
                           'Item Count: ${filteredList.length}',
-                          style: GoogleFonts.poppins(color: Colors.black, fontSize: 14),
+                          style: GoogleFonts.poppins(
+                              color: Colors.black, fontSize: 14),
                         ),
                         GestureDetector(
                           onTap: toggleDateColumnVisibility,
@@ -149,7 +169,9 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 onPressed: toggleDateColumnVisibility,
                                 icon: Icon(
                                   size: 20,
-                                  showDateColumn ? Icons.visibility_off : Icons.visibility,
+                                  showDateColumn
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   color: Color(0xffa4392f),
                                 ),
                               ),
@@ -157,7 +179,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                                 showDateColumn ? 'Hide Date' : 'Show Date',
                                 style: GoogleFonts.poppins(
                                   color: Color(0xffa4392f),
-                                  fontSize: 14, // Adjust font size as needed
+                                  fontSize:
+                                  14, // Adjust font size as needed
                                 ),
                               ),
                             ],
@@ -170,7 +193,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
               ),
               Card(
                 color: const Color(0xffa4392f), // Set background color
-                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                margin:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
@@ -251,7 +275,8 @@ class _ItemsScreenState extends State<ItemsScreen> {
                         );
                       },
                       child: Card(
-                        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 10),
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(

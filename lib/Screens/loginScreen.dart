@@ -27,30 +27,29 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
   late SharedPreferences logindata;
   late bool isnew;
 
-  late AnimationController controller;
-  late Animation<Color?> animation;
-  late Animation<Color?> animation2;
+  // late AnimationController controller;
+  // late Animation<Color?> animation;
+  // late Animation<Color?> animation2;
 
   @override
   void initState() {
     super.initState();
     check_if_already_login();
-    controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    );
-    controller.forward();
-    animation = ColorTween(begin: Color(0xffa4392f), end: Colors.black).animate(controller);
-    animation2 = ColorTween(begin: Colors.white, end: Color(0xffa4392f)).animate(controller);
-
-    controller.addListener(() {
-      setState(() {});
-    });
+    // controller = AnimationController(
+    //   vsync: this,
+    //   duration: Duration(seconds: 1),
+    // );
+    // controller.forward();
+  //   animation = ColorTween(begin: Color(0xffa4392f), end: Colors.black).animate(controller);
+  //   animation2 = ColorTween(begin: Colors.white, end: Color(0xffa4392f)).animate(controller);
+  //
+  //   controller.addListener(() {
+  //     setState(() {});
+  //   });
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -209,8 +208,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                               RoundedButton(
                                 title: 'Login',
                                 colour: Color(0xffa4392f),
-                                animation2: animation2,
-                                animation: animation,
+
                                 onPressed: () async {
                                   setState(() {
                                     showSpinner = true;
