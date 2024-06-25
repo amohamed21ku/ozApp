@@ -1,24 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:oz/Screens/loginScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Widgets/todo.dart';
 import '../components.dart';
 import '../models/user.dart';
 
 class homeScreen extends StatefulWidget {
+  final myUser? currentUser;
 
-  final myUser current_user;
-
-  homeScreen({required this.current_user});
+  homeScreen({this.currentUser});
 
   @override
   _homeScreenState createState() => _homeScreenState();
 }
 
 class _homeScreenState extends State<homeScreen> {
+  late SharedPreferences logindata;
+  late String username;
+  late String password;
+  late String name;
+  late String email;
+  late myUser current_user;
 
   PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    initial();
+    if (widget.currentUser != null) {
+      current_user = widget.currentUser!;
+    } else {
+      current_user = myUser(
+        username: 'default_username',
+        password: 'default_password',
+        name: 'Default Name',
+        email: 'default@example.com',
+        initial: 'D',
+      );
+    }
+  }
+
+  void initial() async {
+    logindata = await SharedPreferences.getInstance();
+    setState(() {
+      username = logindata.getString('username')!;
+      password = logindata.getString('password')!;
+      email = logindata.getString('email')!;
+      name = logindata.getString('name')!;
+      current_user = myUser(username: username, password: password, name: name, email: email, initial: name[0]);
+    });
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -31,6 +66,15 @@ class _homeScreenState extends State<homeScreen> {
     );
   }
 
+  Future<void> _logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all stored data
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => loginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +83,7 @@ class _homeScreenState extends State<homeScreen> {
         physics: NeverScrollableScrollPhysics(),
         children: [
           buildHomePage(),
-          buildToDoPage(),  // Updated to include ToDo page
+          buildToDoPage(),
           buildProfilePage(),
         ],
       ),
@@ -99,7 +143,7 @@ class _homeScreenState extends State<homeScreen> {
                                 ),
                               ),
                               Text(
-                                widget.current_user.name,
+                                current_user.name,
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   color: Colors.black54,
@@ -203,8 +247,6 @@ class _homeScreenState extends State<homeScreen> {
                             title: 'Add requested Sample by Customer',
                             onPressed: () {
                               Navigator.pushNamed(context, "customerscreen");
-
-
                             },
                             width: 0,
                             height: 50,
@@ -238,7 +280,7 @@ class _homeScreenState extends State<homeScreen> {
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -250,7 +292,7 @@ class _homeScreenState extends State<homeScreen> {
   }
 
   Widget buildToDoPage() {
-    return ToDoPage();  // Define the ToDoPage below
+    return ToDoPage();  // Define the ToDoPage below or import it if it's defined elsewhere
   }
 
   Widget buildProfilePage() {
@@ -264,9 +306,7 @@ class _homeScreenState extends State<homeScreen> {
         ),
         backgroundColor: Color(0xffa4392f),
         elevation: 0,
-
         automaticallyImplyLeading: false, // This line removes the default arrow icon
-
       ),
       backgroundColor: Colors.white,
       body: Row(
@@ -285,7 +325,7 @@ class _homeScreenState extends State<homeScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                'AbdulAziz Ashi',
+                current_user.name,
                 style: GoogleFonts.poppins(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -294,7 +334,7 @@ class _homeScreenState extends State<homeScreen> {
               ),
               SizedBox(height: 10),
               Text(
-                'Abdulaziz@ozcevahir.com',
+                current_user.email,
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -302,9 +342,7 @@ class _homeScreenState extends State<homeScreen> {
               ),
               SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  // Logout logic here
-                },
+                onPressed: () => _logout(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xffa4392f),
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),

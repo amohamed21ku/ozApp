@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:oz/Screens/homeScreen.dart';
 import 'package:oz/models/user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components.dart';
 import '../constants.dart';
@@ -23,6 +24,8 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
   bool showSpinner = false;
   String username = '';
   String pass = '';
+  late SharedPreferences logindata;
+  late bool isnew;
 
   late AnimationController controller;
   late Animation<Color?> animation;
@@ -31,6 +34,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
+    check_if_already_login();
     controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
@@ -42,6 +46,12 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
     controller.addListener(() {
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   void _signInWithGoogle() async {
@@ -71,7 +81,7 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
             // add other necessary fields
           );
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => homeScreen(current_user: currentUser),
+            builder: (context) => homeScreen(),
           ));
         }
 
@@ -221,9 +231,14 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
                                         username: userData['username'],
                                         password: userData['password'], initial: '${userData['name'][0]}',
                                       );
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) => homeScreen(current_user: currentUser),
-                                      ));
+                                      logindata.setBool('login', false);
+                                      logindata.setString('username', userData['username']);
+                                      logindata.setString('password', userData['password']);
+                                      logindata.setString('name', userData['name']);
+                                      logindata.setString('email', userData['email']);
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => homeScreen()));
+
+                                      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => homeScreen()));
                                     } else {
                                       // Handle the case where no matching user is found
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -325,5 +340,13 @@ class _loginScreenState extends State<loginScreen> with SingleTickerProviderStat
       ),
     );
   }
-}
 
+  Future<void> check_if_already_login() async {
+    logindata = await SharedPreferences.getInstance();
+    isnew = (logindata.getBool('login') ?? true);
+    print("new user");
+    if(isnew == false){
+      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => homeScreen()));
+    }
+  }
+}

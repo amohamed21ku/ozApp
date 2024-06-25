@@ -30,16 +30,20 @@ class _UsersScreenState extends State<UsersScreen> {
 
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
-      users.clear(); // Clear existing data
-      querySnapshot.docs.forEach((doc) {
+      users = querySnapshot.docs.map((doc) {
         final name = doc['name'] as String;
         final email = doc['email'] as String;
         final username = doc['username'] as String;
         final password = doc['password'] as String;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
-        users.add(myUser(name: name, email: email, initial: initial, username: username, password: password));
-        print(doc['items']);
-      });
+        return myUser(
+          name: name,
+          email: email,
+          initial: initial,
+          username: username,
+          password: password,
+        );
+      }).toList();
     } catch (error) {
       print('Error fetching customers: $error');
     }
@@ -133,10 +137,10 @@ class _UsersScreenState extends State<UsersScreen> {
                         name: user.name,
                         company: user.email,
                         onpress: () {
-
-
+                          print(user.name);
                         },
-                        initial: user.initial, customerId: '',
+                        initial: user.initial,
+                        customerId: '', // Assuming this is needed for the infoCard widget
                       );
                     },
                   ),
@@ -149,5 +153,3 @@ class _UsersScreenState extends State<UsersScreen> {
     );
   }
 }
-
-
