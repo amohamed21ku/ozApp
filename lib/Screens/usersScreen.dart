@@ -20,10 +20,10 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   void initState() {
     super.initState();
-    fetchCustomers();
+    fetchUsers();
   }
 
-  Future<void> fetchCustomers() async {
+  Future<void> fetchUsers() async {
     setState(() {
       showSpinner = true; // Show loading HUD
     });
@@ -54,7 +54,7 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   Future<void> _handleRefresh() async {
-    await fetchCustomers();
+    await fetchUsers();
   }
 
   @override
