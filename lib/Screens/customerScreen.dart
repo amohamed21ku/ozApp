@@ -173,8 +173,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
         child: const Icon(Icons.add, color: Colors.white),
       ),
       body: showSpinner
-          ? const Center(child: CircularProgressIndicator())
-          : RefreshIndicator(
+          ? const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA4392F)), // Change color here
+        ),
+      ) : RefreshIndicator(
         onRefresh: _handleRefresh,
         color: const Color(0xffa4392f), // Change refresh indicator color to theme color
         backgroundColor: Colors.grey[200], // Change background color of refresh indicator

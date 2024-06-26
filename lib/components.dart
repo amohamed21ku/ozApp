@@ -125,52 +125,52 @@ class RoundedButton2 extends StatelessWidget {
 }
 
 // ---------------------------------------------------------
-
-class RoundedButton_withicon extends StatelessWidget {
-  const RoundedButton_withicon(
-      {super.key, required this.colour,
-        required this.title,
-        required this.onPressed,
-        required this.icon});
-
-  final Color colour;
-  final String title;
-  final VoidCallback onPressed;
-  final Icon icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Material(
-        elevation: 5.0,
-        color: colour,
-        borderRadius: BorderRadius.circular(20.0),
-        child: MaterialButton(
-          onPressed: onPressed,
-          minWidth: 325,
-          height: 50,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(
-                width: 7,
-              ),
-              icon,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//
+// class RoundedButton_withicon extends StatelessWidget {
+//   const RoundedButton_withicon(
+//       {super.key, required this.colour,
+//         required this.title,
+//         required this.onPressed,
+//         required this.icon});
+//
+//   final Color colour;
+//   final String title;
+//   final VoidCallback onPressed;
+//   final Icon icon;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 16.0),
+//       child: Material(
+//         elevation: 5.0,
+//         color: colour,
+//         borderRadius: BorderRadius.circular(20.0),
+//         child: MaterialButton(
+//           onPressed: onPressed,
+//           minWidth: 325,
+//           height: 50,
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Text(
+//                 title,
+//                 style: GoogleFonts.poppins(
+//                     color: Colors.black,
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.w600),
+//               ),
+//               const SizedBox(
+//                 width: 7,
+//               ),
+//               icon,
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // ----------------------=======================-----------------------
 class myiconbutton extends StatelessWidget {
