@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'edititemscreen.dart';
 import 'itemDetails.dart';
 
@@ -21,13 +20,36 @@ class _ItemsScreenState extends State<ItemsScreen> {
   List<Map<String, dynamic>> dataList = [];
   List<Map<String, dynamic>> filteredList = [];
   TextEditingController searchController = TextEditingController();
-  bool showDateColumn = false; // Track visibility of Date column
+  List<String> columnOrder = [
+    'Kodu', 'Name', 'Eni', 'Gramaj', 'Price', 'Date', 'Supplier', 'Kalite', 'NOT', 'Item No.'
+  ];
+  Map<String, bool> columnVisibility = {
+    'Kodu': true,
+    'Name': true,
+    'Eni': true,
+    'Gramaj': true,
+    'Price': true,
+    'Date': false,
+    'Supplier': false,
+    'Kalite': false,
+    'NOT': false,
+    'Item No.': false,
+  };
 
   @override
   void initState() {
     super.initState();
     fetchDataFromCache();
     fetchDataFromFirestore();
+  }
+
+  DateTime excelSerialDateToDateTime(int serialDate) {
+    return DateTime(1899, 12, 30).add(Duration(days: serialDate));
+  }
+
+  String formatDateString(DateTime date) {
+    final DateFormat formatter = DateFormat('dd-MMM-yy');
+    return formatter.format(date);
   }
 
   Future<void> fetchDataFromFirestore() async {
@@ -41,14 +63,14 @@ class _ItemsScreenState extends State<ItemsScreen> {
       return data;
     }).toList();
 
-    // Sort dataList based on "kodu" field
-    dataList.sort((a, b) => a['kodu'].compareTo(b['kodu']));
+    // Sort dataList based on "Kodu" field
+    dataList.sort((a, b) => a['Kodu'].compareTo(b['Kodu']));
 
     filteredList = dataList;
 
     // Cache the data
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('itemsData', dataList.toString());
+    await prefs.setString('itemsData', jsonEncode(dataList)); // Use jsonEncode here
 
     setState(() => isLoading = false);
   }
@@ -68,17 +90,84 @@ class _ItemsScreenState extends State<ItemsScreen> {
     setState(() {
       filteredList = dataList
           .where((item) =>
-      item['kodu'].toLowerCase().contains(query.toLowerCase()) ||
-          item['name'].toLowerCase().contains(query.toLowerCase()))
+      item['Kodu'].toLowerCase().contains(query.toLowerCase()) ||
+          item['Item Name'].toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
-  void toggleDateColumnVisibility() {
-    setState(() {
-      showDateColumn = !showDateColumn;
+  void showColumnSelector() {
+    List<String> newColumnOrder = List.from(columnOrder);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                'Select Columns to Display',
+                style: GoogleFonts.poppins(color: Color(0xffa4392f)),
+              ),
+              content: Container(
+                width: double.maxFinite,
+                height: 400, // Set a fixed height to avoid oversized drag targets
+                child: IgnorePointer(
+                  ignoring: false,
+                  child: ReorderableListView(
+                    physics: ClampingScrollPhysics(), // Use clamping physics to prevent bouncing
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (newIndex > oldIndex) {
+                          newIndex -= 1;
+                        }
+                        final String item = newColumnOrder.removeAt(oldIndex);
+                        newColumnOrder.insert(newIndex, item);
+                      });
+                    },
+                    children: newColumnOrder.map((String key) {
+                      return CheckboxListTile(
+                        key: Key(key),
+                        title: Text(
+                          key,
+                          style: GoogleFonts.poppins(color: Colors.black , fontWeight: FontWeight.w400),
+                        ),
+                        value: columnVisibility[key],
+                        onChanged: (bool? value) {
+                          setState(() {
+                            columnVisibility[key] = value!;
+                          });
+                        },
+                        activeColor: Color(0xffa4392f),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(color: Color(0xffa4392f)),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      columnOrder = newColumnOrder;
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((_) {
+      // Update the state of the ItemsScreen when the dialog is dismissed
+      setState(() {});
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +194,6 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const EditItemScreen()),
               ).then((value) {
-                // This code runs when EditItemScreen is popped and control returns to this screen
                 fetchDataFromFirestore();
               });
             },
@@ -136,8 +224,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                       decoration: InputDecoration(
                         labelText: 'Search',
                         hintText: 'Search by Kodu or Name',
-                        hintStyle:
-                        GoogleFonts.poppins(fontWeight: FontWeight.w200),
+                        hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200),
                         labelStyle: GoogleFonts.poppins(color: Colors.grey),
                         prefixIcon: const Icon(Icons.search),
                         enabledBorder: OutlineInputBorder(
@@ -162,25 +249,22 @@ class _ItemsScreenState extends State<ItemsScreen> {
                               color: Colors.black, fontSize: 14),
                         ),
                         GestureDetector(
-                          onTap: toggleDateColumnVisibility,
+                          onTap: showColumnSelector,
                           child: Row(
                             children: [
                               IconButton(
-                                onPressed: toggleDateColumnVisibility,
+                                onPressed: showColumnSelector,
                                 icon: Icon(
                                   size: 20,
-                                  showDateColumn
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
+                                  Icons.view_column,
                                   color: const Color(0xffa4392f),
                                 ),
                               ),
                               Text(
-                                showDateColumn ? 'Hide Date' : 'Show Date',
+                                'Select Columns',
                                 style: GoogleFonts.poppins(
                                   color: const Color(0xffa4392f),
-                                  fontSize:
-                                  14, // Adjust font size as needed
+                                  fontSize: 14,
                                 ),
                               ),
                             ],
@@ -192,69 +276,23 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 ),
               ),
               Card(
-                color: const Color(0xffa4392f), // Set background color
-                margin:
-                const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                color: const Color(0xffa4392f),
+                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Row(
-                    children: [
-                      const Expanded(
-                        child: Text(
-                          "Kodu",
-                          style: TextStyle(
-                            color: Colors.white, // Set text color to white
-                            fontWeight: FontWeight.bold, // Make text bold
-                          ),
+                    children: columnOrder
+                        .where((column) => columnVisibility[column]!)
+                        .map((column) => Expanded(
+                      child: Text(
+                        column,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Expanded(
-                        child: Text(
-                          "Name",
-                          style: TextStyle(
-                            color: Colors.white, // Set text color to white
-                            fontWeight: FontWeight.bold, // Make text bold
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          "Eni",
-                          style: TextStyle(
-                            color: Colors.white, // Set text color to white
-                            fontWeight: FontWeight.bold, // Make text bold
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          "Gramaj",
-                          style: TextStyle(
-                            color: Colors.white, // Set text color to white
-                            fontWeight: FontWeight.bold, // Make text bold
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          "Price",
-                          style: TextStyle(
-                            color: Colors.white, // Set text color to white
-                            fontWeight: FontWeight.bold, // Make text bold
-                          ),
-                        ),
-                      ),
-                      if (showDateColumn) // Show Date column only if showDateColumn is true
-                        const Expanded(
-                          child: Text(
-                            "Date",
-                            style: TextStyle(
-                              color: Colors.white, // Set text color to white
-                              fontWeight: FontWeight.bold, // Make text bold
-                            ),
-                          ),
-                        ),
-                    ],
+                    ))
+                        .toList(),
                   ),
                 ),
               ),
@@ -269,7 +307,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
                           MaterialPageRoute(
                             builder: (context) => ItemDetailsScreen(
                               item: filteredList[index],
-                              docId: filteredList[index]['id'], // Pass the document ID
+                              docId: filteredList[index]['id'],
                             ),
                           ),
                         );
@@ -280,45 +318,21 @@ class _ItemsScreenState extends State<ItemsScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Row(
-                            children: [
-                              Expanded(
+                            children: columnOrder
+                                .where((column) => columnVisibility[column]!)
+                                .map((column) {
+                              final value = filteredList[index][column] ??
+                                  filteredList[index]['Item $column'];
+                              return Expanded(
                                 child: Text(
-                                  filteredList[index]['kodu'].toString(),
+                                  column == 'Date' && value is int
+                                      ? formatDateString(
+                                      excelSerialDateToDateTime(value))
+                                      : value.toString(),
                                   style: GoogleFonts.poppins(fontSize: 12),
                                 ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  filteredList[index]['name'].toString(),
-                                  style: GoogleFonts.poppins(fontSize: 12),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${filteredList[index]['eni']} ',
-                                  style: GoogleFonts.poppins(fontSize: 12),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${filteredList[index]['gramaj']} ',
-                                  style: GoogleFonts.poppins(fontSize: 12),
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  '${filteredList[index]['current price']}',
-                                  style: GoogleFonts.poppins(fontSize: 12),
-                                ),
-                              ),
-                              if (showDateColumn) // Show Date value only if showDateColumn is true
-                                Expanded(
-                                  child: Text(
-                                    filteredList[index]['current tarih'].toString(),
-                                    style: GoogleFonts.poppins(fontSize: 12),
-                                  ),
-                                ),
-                            ],
+                              );
+                            }).toList(),
                           ),
                         ),
                       ),

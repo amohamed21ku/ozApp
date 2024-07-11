@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:oz/Screens/itemsScreen.dart';
 import 'package:oz/Screens/usersScreen.dart';
+import 'package:oz/models/GsheetAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Screens/balancesheet.dart';
@@ -16,12 +17,16 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: const FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
-        appId: "1:648146955193:android:50dc26b187ddce90022468",
-        messagingSenderId: "648146955193",
-        projectId: "ozapp-310aa")
+    options: const FirebaseOptions(apiKey: "AIzaSyD4EvUylj5qVZaIgRksLpQQnbfMdfrC9_Q",
+        appId: "1:995891442462:android:350e0338e00eda4f6b0f0f",
+        messagingSenderId: "995891442462",
+        projectId: "ozcevahir-333a5")
   );
-
+  GsheetAPI().uploadDataToFirestore();
+  // GsheetAPI().fetchDataFromFirestore();
+  // GsheetAPI().fetchDataFromFirestore();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   SharedPreferences logindata = await SharedPreferences.getInstance();
   bool isNew = logindata.getBool('login') ?? true;
 

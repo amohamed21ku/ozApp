@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "648146955193",
-    "project_id": "ozapp-310aa",
-    "storage_bucket": "ozapp-310aa.appspot.com"
+    "project_number": "995891442462",
+    "project_id": "ozcevahir-333a5",
+    "storage_bucket": "ozcevahir-333a5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:648146955193:android:50dc26b187ddce90022468",
+        "mobilesdk_app_id": "1:995891442462:android:350e0338e00eda4f6b0f0f",
         "android_client_info": {
           "package_name": "com.example.oz"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs"
+          "current_key": "AIzaSyD4EvUylj5qVZaIgRksLpQQnbfMdfrC9_Q"
         }
       ],
       "services": {
