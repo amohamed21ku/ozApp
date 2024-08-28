@@ -572,15 +572,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ],
                                         ),
                                       ),
-                                      // You can uncomment and adjust the Checkbox as needed
-                                      // Checkbox(
-                                      //   value: isCheckedList[index],
-                                      //   onChanged: (bool? value) {
-                                      //     setState(() {
-                                      //       isCheckedList[index] = value!;
-                                      //     });
-                                      //   },
-                                      // ),
                                     ],
                                   ),
                                 ),
