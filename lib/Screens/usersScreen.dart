@@ -35,13 +35,14 @@ class _UsersScreenState extends State<UsersScreen> {
         final email = doc['email'] as String;
         final username = doc['username'] as String;
         final password = doc['password'] as String;
+        final id = doc.id;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         return myUser(
           name: name,
           email: email,
           initial: initial,
           username: username,
-          password: password,
+          password: password, id: id,
         );
       }).toList();
     } catch (error) {
@@ -73,7 +74,7 @@ class _UsersScreenState extends State<UsersScreen> {
         ),
         backgroundColor: const Color(0xffa4392f),
         title: Text(
-          'Users',
+          'Users List',
           style: GoogleFonts.poppins(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
@@ -102,26 +103,26 @@ class _UsersScreenState extends State<UsersScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Users List',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(25.0),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Row(
+                //         children: [
+                //           Text(
+                //             'Users List',
+                //             style: GoogleFonts.poppins(
+                //               fontSize: 16.0,
+                //               fontWeight: FontWeight.w600,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //       const SizedBox(height: 10),
+                //     ],
+                //   ),
+                // ),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

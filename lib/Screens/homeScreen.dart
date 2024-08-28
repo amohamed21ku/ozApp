@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:oz/Screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,11 +23,13 @@ class _HomeScreenState extends State<HomeScreen> {
   late String username;
   late String password;
   late String name;
+  late String id;
   late String email;
   late myUser currentUser;
-
   final PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
+  List<Map<String, dynamic>> events = [];
+  List<bool> isCheckedList = [];
 
   @override
   void initState() {
@@ -39,29 +43,59 @@ class _HomeScreenState extends State<HomeScreen> {
         password: 'default_password',
         name: 'Default Name',
         email: 'default@example.com',
-        initial: 'D',
+        initial: 'D', id: '000',
       );
     }
   }
 
-  void initial() async {
-    logindata = await SharedPreferences.getInstance();
-    setState(() {
-      username = logindata.getString('username')!;
-      password = logindata.getString('password')!;
-      email = logindata.getString('email')!;
-      name = logindata.getString('name')!;
-      currentUser = myUser(username: username, password: password, name: name, email: email, initial: name[0]);
-    });
-  }
+  // void initial() async {
+  //   logindata = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     username = logindata.getString('username')!;
+  //     password = logindata.getString('password')!;
+  //     email = logindata.getString('email')!;
+  //     name = logindata.getString('name')!;
+  //     id = logindata.getString('id')!;
+  //     currentUser = myUser(
+  //       username: username,
+  //       password: password,
+  //       name: name,
+  //       email: email,
+  //       initial: name[0],
+  //       id: id,
+  //     );
+  //   });
+  //
+  //   // Fetch events
+  //   final querySnapshot = await FirebaseFirestore.instance
+  //       .collection('events')
+  //       .get();
+  //
+  //   final fetchedEvents = querySnapshot.docs.map((doc) => {
+  //     'docId': doc.id,  // Store the document ID
+  //     'title': doc.data()?['Task'] ?? 'No Title',
+  //     'description': doc.data()?['Description'] ?? 'No Description',
+  //     'isChecked': doc.data()?['isChecked'] ?? false,
+  //   }).toList();
+  //
+  //   setState(() {
+  //     events = fetchedEvents;
+  //     isCheckedList = List.generate(events.length, (index) => events[index]['isChecked']);
+  //   });
+  // }
+
+
+
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _refreshEvents();
+
     });
     _pageController.animateToPage(
       index,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 700),
       curve: Curves.ease,
     );
   }
@@ -75,36 +109,184 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _addEvent(String title, String description) async {
+    final event = {
+      'Task': title.isNotEmpty ? title : 'No Title',
+      'Description': description.isNotEmpty ? description : 'No Description',
+      'isChecked': false, // Default to unchecked
+    };
+
+    // Add the event to Firestore and get the document reference
+    DocumentReference docRef = await FirebaseFirestore.instance.collection('events').add(event);
+
+    // Add the event to the local list with the document ID
+    setState(() {
+      events.add({
+        'docId': docRef.id,
+        'title': event['Task'],
+        'description': event['Description'],
+        'isChecked': event['isChecked'],
+      });
+      isCheckedList.add(false);
+    });
+  }
+
+
+// Delete an event
+  Future<void> _deleteEventFromFirestore(int index) async {
+    if (events.isEmpty || index < 0 || index >= events.length) {
+      print('Invalid index: $index. List might be empty or index out of range.');
+      return;
+    }
+
+    final docId = events[index]['docId']; // Assuming you've saved the docId when fetching events
+
+    if (docId != null) {
+      await FirebaseFirestore.instance
+          .collection('events')
+          .doc(docId)
+          .delete();
+
+      setState(() {
+        events.removeAt(index);
+        isCheckedList.removeAt(index);
+      });
+    } else {
+      print('No docId found for the event at index $index.');
+    }
+  }
+
+
+
+  void _showAddEventDialog() {
+    final TextEditingController titleController = TextEditingController();
+    final TextEditingController descriptionController = TextEditingController();
+
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return  AlertDialog(
+          title: Text('Add Event'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: 'Task Name',
+                ),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Description (optional)',
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _addEvent(titleController.text,
+                    descriptionController.text.isEmpty
+                        ? ''
+                        : descriptionController.text);
+                Navigator.of(context).pop();
+              },
+              child: Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  void initial() async {
+    logindata = await SharedPreferences.getInstance();
+    setState(() {
+      username = logindata.getString('username')!;
+      password = logindata.getString('password')!;
+      email = logindata.getString('email')!;
+      name = logindata.getString('name')!;
+      id = logindata.getString('id')!;
+      currentUser = myUser(
+        username: username,
+        password: password,
+        name: name,
+        email: email,
+        initial: name[0],
+        id: id,
+      );
+    });
+
+    await _fetchEvents();
+  }
+
+  Future<void> _fetchEvents() async {
+    final querySnapshot = await FirebaseFirestore.instance.collection('events').get();
+
+    final fetchedEvents = querySnapshot.docs.map((doc) => {
+      'docId': doc.id,
+      'title': doc.data()?['Task'] ?? 'No Title',
+      'description': doc.data()?['Description'] ?? 'No Description',
+      'isChecked': doc.data()?['isChecked'] ?? false,
+    }).toList();
+
+    setState(() {
+      events = fetchedEvents;
+      isCheckedList = List.generate(events.length, (index) => events[index]['isChecked']);
+    });
+  }
+
+  Future<void> _refreshEvents() async {
+    await _fetchEvents();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          buildHomePage(),
-          buildToDoPage(),
-          buildProfilePage(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.today),
-            label: 'ToDo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xffa4392f),
-        onTap: _onItemTapped,
+    return SafeArea(
+      child: Scaffold(
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildHomePage(),
+            buildToDoPage(),
+            buildProfilePage(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: const Color(0xffa4392f),
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+
+              icon: Icon(Icons.today),
+              label: 'ToDo',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.person,
+              ),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white60,
+          selectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
+          unselectedLabelStyle: GoogleFonts.aBeeZee(fontSize: 12),
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
@@ -116,181 +298,311 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Colors.white10, Colors.white],
+            colors: [Colors.white, Colors.white],
           ),
         ),
-        child: CustomScrollView(
-          slivers: [
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Welcome back,',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black38,
-                              ),
-                            ),
-                            Text(
-                              currentUser.name,
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                color: Colors.black54,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Welcome back,',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black38,
+                          ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            _onItemTapped(2);
-                          },
-                          child: Container(
-                            alignment: Alignment.topRight,
-                            child: const Hero(
-                              tag: 'profile_pic',
-                              child: CircleAvatar(
-                                radius: 30.0,
-                                backgroundImage: AssetImage('images/profile.jpg'),
-                              ),
-                            ),
+                        Text(
+                          currentUser.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: RoundedButtonSmall(
-                            colour: Colors.white,
-                            title: 'Items',
-                            onPressed: () {
-                              Navigator.pushNamed(context, 'itemsscreen');
-                            },
-                            width: 10,
-                            height: 100,
-                            icon: Icons.list_alt,
-                            iconColor: const Color(0xffa4392f),
-                            textcolor: Colors.black,
+                    GestureDetector(
+                      onTap: () {
+                        _onItemTapped(2);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Color(0xffa4392f),
+                            width: 3.0,
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: RoundedButtonSmall(
-                            colour: Colors.white,
-                            title: 'Customers',
-                            onPressed: () {
-                              Navigator.pushNamed(context, 'customerscreen');
-                            },
-                            width: 0,
-                            height: 100,
-                            icon: Icons.person,
-                            iconColor: const Color(0xffa4392f),
-                            textcolor: Colors.black,
+                        alignment: Alignment.topRight,
+                        child: const Hero(
+                          tag: 'profile_pic',
+                          child: CircleAvatar(
+                            radius: 30.0,
+                            backgroundImage: AssetImage('images/profile.jpg'),
                           ),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: RoundedButtonSmall(
-                            colour: Colors.white,
-                            title: 'Sheet',
-                            onPressed: () {
-                              Navigator.pushNamed(context, "balancesheet");
-                              // Handle sheet button tap
-                            },
-                            width: 10,
-                            height: 100,
-                            icon: Icons.newspaper,
-                            iconColor: const Color(0xffa4392f),
-                            textcolor: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: RoundedButtonSmall(
-                            colour: Colors.white,
-                            title: 'Users',
-                            onPressed: () {
-                              Navigator.pushNamed(context, "usersscreen");
-                              // Navigate to customers screen
-                            },
-                            width: 0,
-                            height: 100,
-                            icon: Icons.supervised_user_circle_outlined,
-                            iconColor: const Color(0xffa4392f),
-                            textcolor: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          RoundedButtonSmall(
-                            colour: const Color(0xffa4392f),
-                            title: 'Add requested Sample by Customer',
-                            onPressed: () {
-                              Navigator.pushNamed(context, "customerscreen");
-                            },
-                            width: 0,
-                            height: 50,
-                            icon: Icons.add,
-                            iconColor: Colors.white,
-                            textcolor: Colors.white,
-                          ),
-                          RoundedButtonSmall(
-                            colour: const Color(0xffa4392f),
-                            title: 'Add given Sample',
-                            onPressed: () {
-                              // Navigate to advanced search page
-                            },
-                            width: 0,
-                            height: 50,
-                            icon: Icons.add_box,
-                            iconColor: Colors.white,
-                            textcolor: Colors.white,
-                          ),
-                          RoundedButtonSmall(
-                            colour: const Color(0xffa4392f),
-                            title: 'Random Data',
-                            onPressed: () {
-                              // Navigate to query screen
-                            },
-                            width: 0,
-                            height: 50,
-                            icon: Icons.book,
-                            iconColor: Colors.white,
-                            textcolor: Colors.white,
-                          ),
-                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            )
-          ],
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RoundedButtonSmall(
+                        colour: Colors.white,
+                        title: 'Items',
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'itemsscreen');
+                        },
+                        width: 10,
+                        height: 100,
+                        icon: Icons.list_alt,
+                        iconColor: const Color(0xffa4392f),
+                        textcolor: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RoundedButtonSmall(
+                        colour: Colors.white,
+                        title: 'Customers',
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'customerscreen');
+                        },
+                        width: 0,
+                        height: 100,
+                        icon: Icons.person,
+                        iconColor: const Color(0xffa4392f),
+                        textcolor: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8,),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: RoundedButtonSmall(
+                        colour: Colors.white,
+                        title: 'Sheet',
+                        onPressed: () {
+                          Navigator.pushNamed(context, "balancesheet");
+                        },
+                        width: 10,
+                        height: 100,
+                        icon: Icons.newspaper,
+                        iconColor: const Color(0xffa4392f),
+                        textcolor: Colors.black,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RoundedButtonSmall(
+                        colour: Colors.white,
+                        title: 'Users',
+                        onPressed: () {
+                          Navigator.pushNamed(context, "usersscreen");
+                        },
+                        width: 0,
+                        height: 100,
+                        icon: Icons.supervised_user_circle_outlined,
+                        iconColor: const Color(0xffa4392f),
+                        textcolor: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(child: Container(height: 2, color: Colors.black26)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Card(
+                  color: Color(0xbba4392f),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Today\'s Events',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+
+                                Row(
+                                  children: [
+                                    IconButton(onPressed: _refreshEvents, icon: Icon(size: 25,Icons.refresh,color: Colors.white,)),
+                                    IconButton(
+                                      onPressed: _showAddEventDialog,
+                                      icon: const Icon(
+                                        size: 25,
+                                        Icons.add,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: events.length,
+                          itemBuilder: (context, index) {
+                            final event = events[index];
+
+                            // Ensure timestampString is not null before parsing
+
+
+                            return Dismissible(
+                              direction: DismissDirection.endToStart, // Swipe direction
+
+                              key: UniqueKey(),
+                              background: Container(
+                                color: Colors.white70,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              onDismissed: (direction) async {
+                                await _deleteEventFromFirestore(index);
+
+                              },
+                              child:Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12.0,
+                                    horizontal: 15.0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          final docId = event['docId'];
+
+                                          if (docId != null) {
+                                            final docRef = FirebaseFirestore.instance.collection('events').doc(docId);
+
+                                            try {
+                                              // Toggle the 'isChecked' value in Firestore
+                                              await docRef.update({
+                                                'isChecked': !event['isChecked'], // Toggle the value
+                                              });
+
+                                              // Update local state if needed
+                                              setState(() {
+                                                event['isChecked'] = !event['isChecked'];
+                                              });
+
+                                            } catch (e) {
+                                              print("Error updating Firestore: $e");
+                                            }
+                                          } else {
+                                            print("Document ID is null. Cannot update Firestore.");
+                                          }
+                                        },
+                                        child: Icon(
+                                          event['isChecked'] ? Icons.check_circle : Icons.check_circle_outline,
+                                          size: 30.0,
+                                          color: Color(0xffa4392f),
+                                        ),
+
+                                      ),
+                                      SizedBox(width: 15), // Add spacing between the icon and text if needed
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              event['title'] ?? 'No Title',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 5),
+                                            Text(
+                                              '  ${event['description'] ?? 'No Description'}',
+                                              style: GoogleFonts.poppins(
+                                                fontSize: 13,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      // You can uncomment and adjust the Checkbox as needed
+                                      // Checkbox(
+                                      //   value: isCheckedList[index],
+                                      //   onChanged: (bool? value) {
+                                      //     setState(() {
+                                      //       isCheckedList[index] = value!;
+                                      //     });
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                            );
+                          },
+                        )
+
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-
   Widget buildToDoPage() {
-    return const ToDoPage();  // Define the ToDoPage below or import it if it's defined elsewhere
+    return CalendarPage(currentUser: currentUser);
   }
 
   Widget buildProfilePage() {
@@ -304,7 +616,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: const Color(0xffa4392f),
         elevation: 0,
-        automaticallyImplyLeading: false, // This line removes the default arrow icon
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: Colors.white,
       body: Row(
@@ -314,11 +626,22 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              const Hero(
-                tag: 'profile_pic',
-                child: CircleAvatar(
-                  radius: 80,
-                  backgroundImage: AssetImage('images/profile.jpg'),
+              Container(
+                padding: EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Color(0xffa4392f),
+                    width: 3.0,
+                  ),
+                ),
+                alignment: Alignment.topRight,
+                child: const Hero(
+                  tag: 'profile_pic',
+                  child: CircleAvatar(
+                    radius: 80.0,
+                    backgroundImage: AssetImage('images/profile.jpg'),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -345,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: const Color(0xffa4392f),
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: Text(

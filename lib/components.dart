@@ -26,7 +26,7 @@ class RoundedButton extends StatelessWidget {
         child: MaterialButton(
           onPressed: onPressed,
           minWidth: 325,
-          height: 50,
+          height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -233,33 +233,30 @@ class RoundedButtonSmall extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Material(
-        elevation: 8.0,
-        color: colour,
-        borderRadius: BorderRadius.circular(20.0),
-        child: MaterialButton(
-          onPressed: onPressed,
-          minWidth: width,
-          height: height,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon,color: iconColor,),
-              const SizedBox(width: 10,),
-              Text(
-                title,
-                style: GoogleFonts.poppins(
-                    color: textcolor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(
-                width: 7,
-              ),
-            ],
-          ),
+    return Material(
+      elevation: 8.0,
+      color: colour,
+      borderRadius: BorderRadius.circular(12.0),
+      child: MaterialButton(
+        onPressed: onPressed,
+        minWidth: width,
+        height: height,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon,color: iconColor,),
+            const SizedBox(width: 10,),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                  color: textcolor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(
+              width: 7,
+            ),
+          ],
         ),
       ),
     );

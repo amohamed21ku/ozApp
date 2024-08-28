@@ -5,8 +5,10 @@ class myUser {
   final String password;
   final String username;
   final String? profilePicture;
+  final String? id;
 
   myUser(  {required this.username,
+    required this.id,
     required this.password,
     required this.name,
     required this.email,

@@ -27,6 +27,7 @@ class GsheetAPI {
     _worksheet = ss.worksheetByTitle('Items') ?? await ss.addWorksheet('Items');
   }
 
+// NEED THIS ...
   Future<List<Map<String, dynamic>>> fetchSheetData() async {
     if (_worksheet == null) {
       await init();
@@ -50,26 +51,30 @@ class GsheetAPI {
       Map<String, dynamic> item = {};
       for (int j = 0; j < headers.length; j++) {
         if(headers[j] == 'S/Item No.'){
-          headers[j] = 'Item No.';
+          headers[j] = 'Item No';
         }
         if(headers[j] == 'S/Item Name'){headers[j] = 'Item Name';}
         item[headers[j]] = row.length > j ? row[j] : '';
+
       }
       item.remove('USD');
       item.remove('C/F');
       item.remove('Tarih');
 
-      Map<String, dynamic> previous_prices = {
-        'price_1_1': row.length > 10 ? row[10] : '',
-        'price_1_2': row.length > 11 ? row[11] : '',
-        'price_1_3': row.length > 12 ? row[12] : '',
-        'price_2_1': row.length > 13 ? row[13] : '',
-        'price_2_2': row.length > 14 ? row[14] : '',
-        'price_2_3': row.length > 15 ? row[15] : '',
-        'price_3_1': row.length > 16 ? row[16] : '',
-        'price_3_2': row.length > 17 ? row[17] : '',
-        'price_3_3': row.length > 18 ? row[18] : '',
-      };
+      List<dynamic> previous_prices = [
+        row.length > 10 ? row[10] : '',
+         row.length > 11 ? row[11] : '',
+         row.length > 12 ? row[12] : '',
+        row.length > 13 ? row[13] : '',
+        row.length > 14 ? row[14] : '',
+         row.length > 15 ? row[15] : '',
+         row.length > 16 ? row[16] : '',
+       row.length > 17 ? row[17] : '',
+         row.length > 18 ? row[18] : '',
+        row.length > 19 ? row[19] : '',
+        row.length > 20 ? row[20] : '',
+        row.length > 21 ? row[21] : '',
+      ];
 
       item['Previous_Prices'] = previous_prices;
 
@@ -79,6 +84,7 @@ class GsheetAPI {
     return items;
   }
 
+// NEED THIS ...
   Future<void> uploadDataToFirestore() async {
     final firestore = FirebaseFirestore.instance;
     final sheetData = await fetchSheetData();
@@ -100,6 +106,7 @@ class GsheetAPI {
     }
   }
 
+ // NEED THIS ...
   Future<Map<String, dynamic>> fetchFirestoreData() async {
     final firestore = FirebaseFirestore.instance;
     final querySnapshot = await firestore.collection('items').get();
@@ -111,79 +118,61 @@ class GsheetAPI {
 
     return items;
   }
-
-  Future<void> syncSheetToFirestore() async {
-    final sheetData = await fetchSheetData();
-    final firestoreData = await fetchFirestoreData();
+  Future<void> uploadDataToGoogleSheet() async {
     final firestore = FirebaseFirestore.instance;
+    final querySnapshot = await firestore.collection('items').get();
 
-    final sheetDataMap = {for (var item in sheetData) item['Kodu']: item};
+    List<List<dynamic>> sheetData = [
+      [
+        'Kodu', 'Kalite', 'Eni', 'Gramaj', 'NOT', 'Supplier', 'S/Item No.',
+        'S/Item Name', 'Price', 'Date', 'USD', 'C/F', 'Tarih', 'USD', 'C/F',
+        'Tarih', 'USD', 'C/F', 'Tarih', 'USD', 'C/F', 'Tarih'
+      ]
+    ];
 
-    for (var firestoreItem in firestoreData.values) {
-      if (!sheetDataMap.containsKey(firestoreItem['Kodu'])) {
-        await firestore.collection('items').doc(firestoreItem['Kodu']).delete();
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data();
+      List<dynamic> row = [
+        data['Kodu'],
+        data['Kalite'],
+        data['Eni'],
+        data['Gramaj'],
+        data['NOT'],
+        data['Supplier'],
+        data['Item No'],
+        data['Item Name'],
+        data['Price'],
+        data['Date'],
+      ];
+
+      List previousPrices = data['Previous_Prices'] ?? [];
+      for (int i = 0; i < previousPrices.length; i += 3) {
+        row.add(previousPrices[i] ?? '');
+        row.add(previousPrices[i + 1] ?? '');
+        row.add(previousPrices[i + 2] ?? '');
       }
+
+      sheetData.add(row);
     }
 
-    for (var item in sheetData) {
-      final id = item['Kodu'];
-      if (id == null || id.isEmpty) {
-        continue;
-      }
-
-      if (firestoreData.containsKey(id)) {
-        final firestoreItem = firestoreData[id];
-        bool hasChanged = false;
-
-        Map<String, dynamic> updatedData = {};
-        if (item['Kalite'] != firestoreItem['Kalite']) {
-          updatedData['Kalite'] = item['Kalite'];
-          hasChanged = true;
-        }
-        if (item['Eni'] != firestoreItem['Eni']) {
-          updatedData['Eni'] = item['Eni'];
-          hasChanged = true;
-        }
-        if (item['Gramaj'] != firestoreItem['Gramaj']) {
-          updatedData['Gramaj'] = item['Gramaj'];
-          hasChanged = true;
-        }
-        if (item['NOT'] != firestoreItem['NOT']) {
-          updatedData['NOT'] = item['NOT'];
-          hasChanged = true;
-        }
-        if (item['Supplier'] != firestoreItem['Supplier']) {
-          updatedData['Supplier'] = item['Supplier'];
-          hasChanged = true;
-        }
-        if (item['Item No.'] != firestoreItem['Item No.']) {
-          updatedData['Item No.'] = item['Item No.'];
-          hasChanged = true;
-        }
-        if (item['Item Name'] != firestoreItem['Item Name']) {
-          updatedData['Item Name'] = item['Item Name'];
-          hasChanged = true;
-        }
-        if (item['Price'] != firestoreItem['Price']) {
-          updatedData['Price'] = item['Price'];
-          hasChanged = true;
-        }
-        if (item['Date'] != firestoreItem['Date']) {
-          updatedData['Date'] = item['Date'];
-          hasChanged = true;
-        }
-
-        if (item['Previous_Prices'] != firestoreItem['Previous_Prices']) {
-          updatedData['Previous_Prices'] = item['Previous_Prices'];
-          hasChanged = true;
-        }
-
-        if (hasChanged) {
-          await firestore.collection('items').doc(id).update(updatedData);
-        }
-      } else {
-        await firestore.collection('items').doc(id).set(item);
-      }
+    if (_worksheet == null) {
+      await init();
     }
+
+    await _worksheet!.clear();
+    await _worksheet!.values.insertRows(1, sheetData);
+
+
+    if (_worksheet == null) {
+      await init();
+    }
+
+    await _worksheet!.clear();
+    await _worksheet!.values.insertRows(1, sheetData);
   }
+
+
+
 }
+
+

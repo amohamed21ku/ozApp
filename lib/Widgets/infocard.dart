@@ -109,7 +109,7 @@ class InfoCard extends StatelessWidget {
         );
       },
       background: Container(
-        color: Colors.red,
+        color: const Color(0xffa4392f),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.centerRight,
         child: const Icon(Icons.delete, color: Colors.white),

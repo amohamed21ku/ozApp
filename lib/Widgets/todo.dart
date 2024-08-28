@@ -1,127 +1,189 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:oz/models/user.dart';  // Import the user model
 
-class ToDoPage extends StatefulWidget {
-  const ToDoPage({super.key});
+class CalendarPage extends StatefulWidget {
+  final myUser currentUser;
+
+  const CalendarPage({super.key, required this.currentUser});
 
   @override
-  _ToDoPageState createState() => _ToDoPageState();
+  _CalendarPageState createState() => _CalendarPageState();
 }
 
-class _ToDoPageState extends State<ToDoPage> {
-  final List<String> users = ['User1', 'User2', 'User3']; // Replace with dynamic user list
-  final Map<String, List<Map<String, dynamic>>> userTasks = {};
+class _CalendarPageState extends State<CalendarPage> {
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
-    for (var user in users) {
-      userTasks[user] = [];
+  }
+
+  Future<List<Map<String, dynamic>>> _getEventsForDay(DateTime day) async {
+    List<Map<String, dynamic>> events = [];
+    final snapshot = await _firestore.collection('users').doc(widget.currentUser.username).collection('events').get();
+    if (snapshot.docs.isNotEmpty) {
+      final filteredEvents = snapshot.docs.where((doc) => isSameDay((doc['date'] as Timestamp).toDate(), day)).map((doc) => doc.data()).cast<Map<String, dynamic>>();
+      events.addAll(filteredEvents);
     }
+    return events;
   }
 
-  void _addTask(String user, String task) {
-    setState(() {
-      userTasks[user]?.add({'task': task, 'completed': false});
-    });
+  Future<void> _addEvent(String event, TimeOfDay time) async {
+    final newEvent = {
+      'date': _selectedDay,
+      'event': event,
+      'time': time.format(context),
+    };
+
+    await _firestore.collection('users').doc(widget.currentUser.username).collection('events').add(newEvent);
+    setState(() {});
   }
 
-  void _toggleTaskCompletion(String user, int taskIndex) {
-    setState(() {
-      userTasks[user]?[taskIndex]['completed'] = !(userTasks[user]?[taskIndex]['completed'] ?? false);
-    });
+  void _showAddEventDialog() {
+    final _eventController = TextEditingController();
+    TimeOfDay _selectedTime = TimeOfDay.now();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Event'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _eventController,
+                decoration: const InputDecoration(labelText: 'Event'),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  const Text('Time:'),
+                  TextButton(
+                    onPressed: () async {
+                      final TimeOfDay? picked = await showTimePicker(
+                        context: context,
+                        initialTime: _selectedTime,
+                      );
+                      if (picked != null && picked != _selectedTime) {
+                        setState(() {
+                          _selectedTime = picked;
+                        });
+                      }
+                    },
+                    child: Text(_selectedTime.format(context)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _addEvent(_eventController.text, _selectedTime);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List',style: GoogleFonts.poppins(color: Colors.white),),
+        title: Text('Calendar Events', style: GoogleFonts.poppins(color: Colors.white)),
         backgroundColor: const Color(0xffa4392f),
-        automaticallyImplyLeading: false, // This line removes the default arrow icon
-
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add,color: Colors.white,),
+            onPressed: _showAddEventDialog,
+          ),
+        ],
       ),
-      body: ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          final user = users[index];
-          return ExpansionTile(
-            title: Text(user),
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: userTasks[user]?.length ?? 0,
-                itemBuilder: (context, taskIndex) {
-                  final task = userTasks[user]?[taskIndex];
-                  final completed = task?['completed'] ?? false;
-                  return ListTile(
-                    leading: Checkbox(
-                      value: completed,
-                      onChanged: (bool? value) {
-                        _toggleTaskCompletion(user, taskIndex);
-                      },
-                    ),
-                    title: Text(
-                      task?['task'] ?? '',
-                      style: TextStyle(
-                        decoration: completed ? TextDecoration.lineThrough : null,
-                        color: completed ? Colors.grey : Colors.black,
-                      ),
-                    ),
-                  );
-                },
+      body: Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2020, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: _focusedDay,
+            calendarFormat: _calendarFormat,
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              _focusedDay = focusedDay;
+            },
+            calendarStyle: const CalendarStyle(
+              todayDecoration: BoxDecoration(
+                color: Color(0xbea4392f),
+                shape: BoxShape.circle,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          labelText: 'Add Task',
+              selectedDecoration: BoxDecoration(
+                color: Color(0xffa4392f),
+                shape: BoxShape.circle,
+              ),
+              todayTextStyle: TextStyle(color: Colors.white),
+              selectedTextStyle: TextStyle(color: Colors.white),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: _getEventsForDay(_selectedDay ?? _focusedDay),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return const Center(child: Text('Error loading events'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No events for this day'));
+                } else {
+                  final events = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+                      return Card(
+                        child: ListTile(
+                          title: Text(event['event']),
+                          subtitle: Text(event['time']),
                         ),
-                        onSubmitted: (task) {
-                          _addTask(user, task);
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                        final taskController = TextEditingController();
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Add Task for $user'),
-                            content: TextField(
-                              controller: taskController,
-                              decoration: const InputDecoration(hintText: 'Enter task'),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  _addTask(user, taskController.text);
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Add'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

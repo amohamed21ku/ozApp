@@ -100,6 +100,7 @@ class _MyCardState extends State<MyCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Row(
               children: [
                 Expanded(
@@ -130,6 +131,10 @@ class _MyCardState extends State<MyCard> {
                     cursorColor: const Color(0xffa4392f),
                     controller: _nameController,
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete,size: 25,color:Colors.black26 ,),
+                  onPressed: widget.onPressedDelete,
                 ),
               ],
             ),
@@ -170,6 +175,7 @@ class _MyCardState extends State<MyCard> {
                     controller: _priceController,
                   ),
                 ),
+                SizedBox(width: 41,)
               ],
             ),
             const SizedBox(height: 4),
@@ -215,10 +221,7 @@ class _MyCardState extends State<MyCard> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: widget.onPressedDelete,
-                ),
+
               ],
             ),
           ],
@@ -596,23 +599,25 @@ class _MyCard2State extends State<MyCard2> {
 
 
 
-
 class EditCard extends StatelessWidget {
   final int index;
   final Map<String, dynamic> item;
-  final bool showDateColumn;
+  final List<String> columnOrder;
+  final Map<String, bool> columnVisibility;
   final Function(int) onDelete;
   final Future<void> Function(BuildContext, int) selectDate;
   final Future<bool?> Function(int) confirmDeleteItem;
 
-  const EditCard({
+
+  const EditCard({super.key,
+
     required this.index,
     required this.item,
-    required this.showDateColumn,
+    required this.columnOrder,
+    required this.columnVisibility,
     required this.onDelete,
     required this.selectDate,
     required this.confirmDeleteItem,
-    super.key,
   });
 
   @override
@@ -637,103 +642,57 @@ class EditCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: TextEditingController(
-                    text: item['kodu'].toString(),
-                  ),
-                  onChanged: (value) {
-                    item['kodu'] = value;
-                  },
-                  style: GoogleFonts.poppins(fontSize: 12),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  maxLines: null,
-                  controller: TextEditingController(
-                    text: item['name'].toString(),
-                  ),
-                  onChanged: (value) {
-                    item['name'] = value;
-                  },
-                  style: GoogleFonts.poppins(fontSize: 12),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: TextEditingController(
-                    text: item['eni'].toString(),
-                  ),
-                  onChanged: (value) {
-                    item['eni'] = value;
-                  },
-                  style: GoogleFonts.poppins(fontSize: 12),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: TextEditingController(
-                    text: item['gramaj'].toString(),
-                  ),
-                  onChanged: (value) {
-                    item['gramaj'] = value;
-                  },
-                  style: GoogleFonts.poppins(fontSize: 12),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: TextEditingController(
-                    text: item['current price'].toString(),
-                  ),
-                  onChanged: (value) {
-                    item['current price'] = value;
-                  },
-                  style: GoogleFonts.poppins(fontSize: 12),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              if (showDateColumn)
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => selectDate(context, index),
-                    child: AbsorbPointer(
-                      child: TextField(
-                        maxLines: null,
-                        controller: TextEditingController(
-                          text: item['current tarih'].toString(),
-                        ),
-                        onChanged: (value) {
-                          item['current tarih'] = value;
-                        },
-                        style: GoogleFonts.poppins(fontSize: 12),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
+            children: columnOrder
+                .where((column) => columnVisibility[column]!)
+                .map((column) {
+              final value = item[column] ?? item['Item $column'];
+              return Expanded(
+                child: column == 'Date'
+                    ? GestureDetector(
+                  onTap: () => selectDate(context, index),
+                  child: AbsorbPointer(
+                    child: TextField(
+                      controller: TextEditingController(
+                        text: value.toString(),
+                      ),
+                      onChanged: (value) {
+                        item[column] = value;
+
+
+                      },
+                      style: GoogleFonts.poppins(fontSize: 12),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
                       ),
                     ),
                   ),
+                )
+                    : TextField(
+                  controller: TextEditingController(
+                    text: value.toString(),
+                  ),
+                  onChanged: (value) {
+                    if(column == 'Name'){
+                      column = 'Item Name';
+                    }
+                    item[column] = value;
+
+
+                  },
+
+                    style: GoogleFonts.poppins(fontSize: 12),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                  ),
                 ),
-            ],
+              );
+            }).toList(),
           ),
         ),
       ),
     );
   }
+
+
 }
+

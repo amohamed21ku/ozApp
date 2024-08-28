@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:oz/Screens/itemsScreen.dart';
 import 'package:oz/Screens/usersScreen.dart';
-import 'package:oz/models/GsheetAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Screens/balancesheet.dart';
@@ -16,13 +15,18 @@ Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   options: const FirebaseOptions(apiKey:"AIzaSyDTLhv_YdM8Kas33R8tUdVm0S7SlBU2jWY",
+  //       appId:  "1:111584263303:android:80582355518d46b5074c22",
+  //       messagingSenderId: "111584263303",
+  //       projectId:  "oozapp-94383")
+  // );
   await Firebase.initializeApp(
-    options: const FirebaseOptions(apiKey: "AIzaSyD4EvUylj5qVZaIgRksLpQQnbfMdfrC9_Q",
-        appId: "1:995891442462:android:350e0338e00eda4f6b0f0f",
-        messagingSenderId: "995891442462",
-        projectId: "ozcevahir-333a5")
+      options: const FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
+          appId:   "1:648146955193:android:50dc26b187ddce90022468",
+          messagingSenderId:  "648146955193",
+          projectId: "ozapp-310aa")
   );
-  GsheetAPI().uploadDataToFirestore();
   // GsheetAPI().fetchDataFromFirestore();
   // GsheetAPI().fetchDataFromFirestore();
   // WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +52,7 @@ class MyApp extends StatelessWidget {
         "loginscreen": (context) => const LoginScreen(),
         "homescreen": (context) => const HomeScreen(),
         "itemsscreen": (context) => const ItemsScreen(),
+
         "profilescreen": (context) => const ProfileScreen(),
         "customerscreen": (context) => const CustomerScreen(),
         "balancesheet": (context) => const BalanceSheet(),

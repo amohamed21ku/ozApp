@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -72,7 +70,7 @@ class _BalanceSheetState extends State<BalanceSheet> {
         ),
         backgroundColor: const Color(0xffa4392f),
         title: Text(
-          'Balance Sheet',
+          'Balance Sheet List',
           style: GoogleFonts.poppins(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
@@ -95,26 +93,26 @@ class _BalanceSheetState extends State<BalanceSheet> {
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(25.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Balance Sheet List',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(25.0),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Row(
+                //         children: [
+                //           Text(
+                //             'Balance Sheet List',
+                //             style: GoogleFonts.poppins(
+                //               fontSize: 16.0,
+                //               fontWeight: FontWeight.w600,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //       const SizedBox(height: 10),
+                //     ],
+                //   ),
+                // ),
                 Container(
                   decoration: BoxDecoration(
                     color: Colors.white,

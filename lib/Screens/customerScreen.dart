@@ -159,7 +159,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
         ),
         backgroundColor: const Color(0xffa4392f),
         title: Text(
-          'Customers',
+          'Customers List',
           style: GoogleFonts.poppins(
             fontSize: 16.0,
             fontWeight: FontWeight.w600,
@@ -185,26 +185,26 @@ class _CustomerScreenState extends State<CustomerScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Customer List',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(25.0),
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       // Row(
+              //       //   children: [
+              //       //     Text(
+              //       //       'Customer List',
+              //       //       style: GoogleFonts.poppins(
+              //       //         fontSize: 16.0,
+              //       //         fontWeight: FontWeight.w600,
+              //       //       ),
+              //       //     ),
+              //       //   ],
+              //       // ),
+              //       // const SizedBox(height: 10),
+              //     ],
+              //   ),
+              // ),
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,

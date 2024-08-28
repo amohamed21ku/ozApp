@@ -14,40 +14,64 @@ class ItemDetailsScreen extends StatefulWidget {
 
 class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
   TextEditingController koduController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
+  TextEditingController kaliteController = TextEditingController();
   TextEditingController eniController = TextEditingController();
   TextEditingController gramajController = TextEditingController();
-  TextEditingController currentPriceController = TextEditingController();
-  TextEditingController currentDateController = TextEditingController();
+  TextEditingController supplierController = TextEditingController();
+  TextEditingController itemNoController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
   List<Map<String, dynamic>> previousPrices = [];
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers with existing data
-    koduController.text = widget.item['kodu'];
-    nameController.text = widget.item['name'];
-    eniController.text = widget.item['eni'];
-    gramajController.text = widget.item['gramaj'];
-    currentPriceController.text = widget.item['current price'];
-    currentDateController.text = widget.item['current tarih'];
+    koduController.text = widget.item['Kodu'] ?? '';
+    kaliteController.text = widget.item['Kalite'] ?? '';
+    eniController.text = widget.item['Eni'] ?? '';
+    gramajController.text = widget.item['Gramaj'] ?? '';
+    supplierController.text = widget.item['Supplier'] ?? '';
+    itemNoController.text = widget.item['Item No.'] ?? '';
+    nameController.text = widget.item['Item Name'] ?? '';
+    priceController.text = widget.item['Price'] ?? '';
+    dateController.text = widget.item['Date'] ?? '';
 
     // Initialize previous prices
-    if (widget.item.containsKey('previous_prices')) {
-      previousPrices = List<Map<String, dynamic>>.from(widget.item['previous_prices']);
-    }
+    // if (widget.item.containsKey('Previous_Prices')) {
+    //   String previousPricesString = widget.item['Previous_Prices'];
+    //   Map<String, dynamic> previousPricesMap = jsonDecode(previousPricesString);
+    //   previousPrices = previousPricesMap.entries.map((entry) {
+    //     return {
+    //       'date': DateTime.now(), // Replace with the actual date if available
+    //       'price_1_1': previousPricesMap['price_1_1'] ?? '',
+    //       'price_1_2': previousPricesMap['price_1_2'] ?? '',
+    //       'price_1_3': previousPricesMap['price_1_3'] ?? '',
+    //       'price_2_1': previousPricesMap['price_2_1'] ?? '',
+    //       'price_2_2': previousPricesMap['price_2_2'] ?? '',
+    //       'price_2_3': previousPricesMap['price_2_3'] ?? '',
+    //       'price_3_1': previousPricesMap['price_3_1'] ?? '',
+    //       'price_3_2': previousPricesMap['price_3_2'] ?? '',
+    //       'price_3_3': previousPricesMap['price_3_3'] ?? '',
+    //     };
+    //   }).toList();
+    // }
   }
 
   Future<void> updateItemData() async {
     // Prepare updated data
     Map<String, dynamic> itemData = {
-      'kodu': koduController.text,
-      'name': nameController.text,
-      'eni': eniController.text,
-      'gramaj': gramajController.text,
-      'current price': currentPriceController.text,
-      'current tarih': currentDateController.text,
-      'previous_prices': previousPrices,
+      'Kodu': koduController.text,
+      'Kalite': kaliteController.text,
+      'Eni': eniController.text,
+      'Gramaj': gramajController.text,
+      'Supplier': supplierController.text,
+      'Item No.': itemNoController.text,
+      'Item Name': nameController.text,
+      'Price': priceController.text,
+      'Date': dateController.text,
+      // 'Previous_Prices': jsonEncode(previousPrices),
     };
 
     try {
@@ -76,7 +100,15 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
     setState(() {
       previousPrices.add({
         'date': DateTime.now(), // Default to current date
-        'price': '', // Empty price initially
+        'price_1_1': '', // Empty price initially
+        'price_1_2': '',
+        'price_1_3': '',
+        'price_2_1': '',
+        'price_2_2': '',
+        'price_2_3': '',
+        'price_3_1': '',
+        'price_3_2': '',
+        'price_3_3': '',
       });
     });
   }
@@ -124,8 +156,8 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               decoration: const InputDecoration(labelText: 'Kodu'),
             ),
             TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              controller: kaliteController,
+              decoration: const InputDecoration(labelText: 'Kalite'),
             ),
             TextField(
               controller: eniController,
@@ -136,12 +168,24 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               decoration: const InputDecoration(labelText: 'Gramaj'),
             ),
             TextField(
-              controller: currentPriceController,
-              decoration: const InputDecoration(labelText: 'Current Price'),
+              controller: supplierController,
+              decoration: const InputDecoration(labelText: 'Supplier'),
             ),
             TextField(
-              controller: currentDateController,
-              decoration: const InputDecoration(labelText: 'Current Date'),
+              controller: itemNoController,
+              decoration: const InputDecoration(labelText: 'Item No.'),
+            ),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(labelText: 'Item Name'),
+            ),
+            TextField(
+              controller: priceController,
+              decoration: const InputDecoration(labelText: 'Price'),
+            ),
+            TextField(
+              controller: dateController,
+              decoration: const InputDecoration(labelText: 'Date'),
             ),
             const SizedBox(height: 20),
             Text(
@@ -152,94 +196,108 @@ class _ItemDetailsScreenState extends State<ItemDetailsScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            DataTable(
-              columns: const [
-                DataColumn(label: Text('Date')),
-                DataColumn(label: Text('Price')),
-                DataColumn(label: Text('Actions')),
-              ],
-              rows: List.generate(
-                previousPrices.length,
-                    (index) => DataRow(
-                  cells: [
-                    DataCell(
-                      GestureDetector(
-                        onTap: () => showDatePickerAndSetDate(index),
+            Table(
+              border: TableBorder.all(),
+              columnWidths: const {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(2),
+                2: FlexColumnWidth(2),
+                3: FlexColumnWidth(1),
+              },
+              children: [
+                TableRow(
+                  children: [
+                    TableCell(
+                      child: Center(
                         child: Text(
-                          '${previousPrices[index]['date'].day}-${getMonthName(previousPrices[index]['date'].month)}-${previousPrices[index]['date'].year}',
+                          'USD',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
-                    DataCell(
-                      TextField(
-                        controller: TextEditingController(
-                          text: previousPrices[index]['price'],
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          'C/F',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            previousPrices[index]['price'] = value;
-                          });
-                        },
                       ),
                     ),
-                    DataCell(
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => removePrice(index),
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          'Tarih',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                    TableCell(
+                      child: Center(
+                        child: Text(
+                          'Actions',
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ],
                 ),
-              )..addAll([
-                // Add an "Add" button row
-                DataRow(cells: [
-                  DataCell(
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: addNewPrice,
-                        child: const Text('Add Price'),
+                for (var i = 0; i < previousPrices.length; i++)
+                  TableRow(
+                    children: [
+                      TableCell(
+                        child: TextField(
+                          controller: TextEditingController(
+                            text: previousPrices[i]['price_1_1'],
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              previousPrices[i]['price_1_1'] = value;
+                            });
+                          },
+                        ),
                       ),
-                    ),
+                      TableCell(
+                        child: TextField(
+                          controller: TextEditingController(
+                            text: previousPrices[i]['price_1_2'],
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              previousPrices[i]['price_1_2'] = value;
+                            });
+                          },
+                        ),
+                      ),
+                      TableCell(
+                        child: TextField(
+                          controller: TextEditingController(
+                            text: previousPrices[i]['price_1_3'],
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              previousPrices[i]['price_1_3'] = value;
+                            });
+                          },
+                        ),
+                      ),
+                      TableCell(
+                        child: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => removePrice(i),
+                        ),
+                      ),
+                    ],
                   ),
-                  DataCell(Container()), // Empty cell for price
-                  DataCell(Container()), // Empty cell for actions
-                ]),
-              ]),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: addNewPrice,
+              child: const Text('Add Price'),
             ),
           ],
         ),
       ),
     );
-  }
-
-  String getMonthName(int month) {
-    switch (month) {
-      case 1:
-        return 'Jan';
-      case 2:
-        return 'Feb';
-      case 3:
-        return 'Mar';
-      case 4:
-        return 'Apr';
-      case 5:
-        return 'May';
-      case 6:
-        return 'Jun';
-      case 7:
-        return 'Jul';
-      case 8:
-        return 'Aug';
-      case 9:
-        return 'Sep';
-      case 10:
-        return 'Oct';
-      case 11:
-        return 'Nov';
-      case 12:
-        return 'Dec';
-      default:
-        return '';
-    }
   }
 }

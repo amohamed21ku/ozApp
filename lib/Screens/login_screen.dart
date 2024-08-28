@@ -5,12 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:oz/Screens/homeScreen.dart';
-// import 'package:oz/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components.dart';
 import '../constants.dart';
-import '../models/components/square_tile.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -129,31 +127,35 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           ),
                         ),
                         const SizedBox(height: 30,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'Login',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
+                        Expanded(
+                          flex:1,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Login',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  'Access account',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 12,
+                                  Text(
+                                    'Access account',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 12,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 20,),
-                              ],
-                            ),
-                          ],
+                                  const SizedBox(height: 20,),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                         Expanded(
                           flex: 3,
@@ -229,6 +231,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       logindata.setString('password', userData['password']);
                                       logindata.setString('name', userData['name']);
                                       logindata.setString('email', userData['email']);
+                                      logindata.setString("id",  snapshot.docs.first.id);
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
 
                                       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => homeScreen()));
@@ -261,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       "Don't have an account?  ",
                                       style: GoogleFonts.poppins(
                                         fontSize: 15,
-                                        color: Colors.black,
+                                        color: Colors.black26,
                                       ),
                                     ),
                                     Text(
@@ -275,50 +278,50 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 30,),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Divider(
-                                      thickness: 0.5,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                    child: Text(
-                                      'Or continue with',
-                                      style: GoogleFonts.poppins(color: Colors.grey[700]),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Divider(
-                                      thickness: 0.5,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20,),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        // google button
-                                        SquareTile(imagePath: 'images/google.png', ontap: _signInWithGoogle,),
-
-                                        const SizedBox(width: 40),
-
-                                        // apple button
-                                        SquareTile(imagePath: 'images/apple.png', ontap: () {},)
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // const SizedBox(height: 30,),
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       child: Divider(
+                              //         thickness: 0.5,
+                              //         color: Colors.grey[400],
+                              //       ),
+                              //     ),
+                              //     Padding(
+                              //       padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              //       child: Text(
+                              //         'Or continue with',
+                              //         style: GoogleFonts.poppins(color: Colors.grey[700]),
+                              //       ),
+                              //     ),
+                              //     Expanded(
+                              //       child: Divider(
+                              //         thickness: 0.5,
+                              //         color: Colors.grey[400],
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
+                              // const SizedBox(height: 20,),
+                              // Expanded(
+                              //   child: Column(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: [
+                              //       Row(
+                              //         mainAxisAlignment: MainAxisAlignment.center,
+                              //         children: [
+                              //           // google button
+                              //           SquareTile(imagePath: 'images/google.png', ontap: _signInWithGoogle,),
+                              //
+                              //           const SizedBox(width: 40),
+                              //
+                              //           // apple button
+                              //           SquareTile(imagePath: 'images/apple.png', ontap: () {},)
+                              //         ],
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),
