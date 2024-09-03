@@ -22,32 +22,82 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
+    _selectedDay = DateTime.now();  // Set today's date as the selected date by default
   }
 
+  // Fetching events for the selected day
   Future<List<Map<String, dynamic>>> _getEventsForDay(DateTime day) async {
     List<Map<String, dynamic>> events = [];
-    final snapshot = await _firestore.collection('users').doc(widget.currentUser.username).collection('events').get();
-    if (snapshot.docs.isNotEmpty) {
-      final filteredEvents = snapshot.docs.where((doc) => isSameDay((doc['date'] as Timestamp).toDate(), day)).map((doc) => doc.data()).cast<Map<String, dynamic>>();
-      events.addAll(filteredEvents);
+
+    // Fetch the user document
+    final docSnapshot = await _firestore
+        .collection('users')
+        .doc(widget.currentUser.id)
+        .get();
+
+    // Check if the document exists and if it contains the 'calender_events' field
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data();
+      if (data != null && data['calender_events'] != null) {
+        // Filter events to include only those that match the selected day
+        final allEvents = List<Map<String, dynamic>>.from(data['calender_events']);
+        final filteredEvents = allEvents.where((event) =>
+            isSameDay((event['date'] as Timestamp).toDate(), day)).toList();
+        events.addAll(filteredEvents);
+      }
     }
     return events;
   }
 
+  // Adding a new event for the selected day
   Future<void> _addEvent(String event, TimeOfDay time) async {
     final newEvent = {
-      'date': _selectedDay,
+      'date': _selectedDay,  // Ensure _selectedDay is not null
       'event': event,
       'time': time.format(context),
     };
 
-    await _firestore.collection('users').doc(widget.currentUser.username).collection('events').add(newEvent);
+    // Get the current list of events
+    final docSnapshot = await _firestore
+        .collection('users')
+        .doc(widget.currentUser.id)
+        .get();
+
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data();
+      List<Map<String, dynamic>> events = [];
+
+      if (data != null && data['calender_events'] != null) {
+        events = List<Map<String, dynamic>>.from(data['calender_events']);
+      }
+
+      // Add the new event to the list
+      events.add(newEvent);
+
+      // Save the updated list back to Firestore
+      await _firestore
+          .collection('users')
+          .doc(widget.currentUser.id)
+          .update({
+        'calender_events': events,
+      });
+    } else {
+      // If the document doesn't exist, create it with the new event
+      await _firestore
+          .collection('users')
+          .doc(widget.currentUser.id)
+          .set({
+        'calender_events': [newEvent],
+      });
+    }
+
     setState(() {});
   }
 
+  // Show a dialog to add a new event
   void _showAddEventDialog() {
-    final _eventController = TextEditingController();
-    TimeOfDay _selectedTime = TimeOfDay.now();
+    final eventController = TextEditingController();
+    TimeOfDay selectedTime = TimeOfDay.now();
 
     showDialog(
       context: context,
@@ -58,7 +108,7 @@ class _CalendarPageState extends State<CalendarPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _eventController,
+                controller: eventController,
                 decoration: const InputDecoration(labelText: 'Event'),
               ),
               const SizedBox(height: 20),
@@ -69,15 +119,15 @@ class _CalendarPageState extends State<CalendarPage> {
                     onPressed: () async {
                       final TimeOfDay? picked = await showTimePicker(
                         context: context,
-                        initialTime: _selectedTime,
+                        initialTime: selectedTime,
                       );
-                      if (picked != null && picked != _selectedTime) {
+                      if (picked != null && picked != selectedTime) {
                         setState(() {
-                          _selectedTime = picked;
+                          selectedTime = picked;
                         });
                       }
                     },
-                    child: Text(_selectedTime.format(context)),
+                    child: Text(selectedTime.format(context)),
                   ),
                 ],
               ),
@@ -92,7 +142,7 @@ class _CalendarPageState extends State<CalendarPage> {
             ),
             TextButton(
               onPressed: () {
-                _addEvent(_eventController.text, _selectedTime);
+                _addEvent(eventController.text, selectedTime);
                 Navigator.of(context).pop();
               },
               child: const Text('Add'),
@@ -103,15 +153,18 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
+  // Building the UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+
         title: Text('Calendar Events', style: GoogleFonts.poppins(color: Colors.white)),
         backgroundColor: const Color(0xffa4392f),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add,color: Colors.white,),
+            icon: const Icon(Icons.add, color: Colors.white,),
             onPressed: _showAddEventDialog,
           ),
         ],

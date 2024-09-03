@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:oz/Screens/homeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,48 +44,48 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   }
 
 
-  void _signInWithGoogle() async {
-    setState(() {
-      showSpinner = true;
-    });
-
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-        final user = userCredential.user;
-
-        final snapshot = await FirebaseFirestore.instance.collection('residents').where('email', isEqualTo: user!.email).get();
-
-        if (snapshot.docs.isNotEmpty) {
-          // final currentUser = myUser(
-          //   username: user.uid,
-          //   email: '', password:'' , name: '', initial: '',
-          //   // add other necessary fields
-          // );
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ));
-        }
-
-        setState(() {
-          showSpinner = false;
-        });
-      }
-    } catch (e) {
-      // print('Error: $e');
-      setState(() {
-        showSpinner = false;
-      });
-    }
-  }
+  // void _signInWithGoogle() async {
+  //   setState(() {
+  //     showSpinner = true;
+  //   });
+  //
+  //   try {
+  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //     if (googleUser != null) {
+  //       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+  //
+  //       final credential = GoogleAuthProvider.credential(
+  //         accessToken: googleAuth.accessToken,
+  //         idToken: googleAuth.idToken,
+  //       );
+  //
+  //       final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+  //       final user = userCredential.user;
+  //
+  //       final snapshot = await FirebaseFirestore.instance.collection('residents').where('email', isEqualTo: user!.email).get();
+  //
+  //       if (snapshot.docs.isNotEmpty) {
+  //         // final currentUser = myUser(
+  //         //   username: user.uid,
+  //         //   email: '', password:'' , name: '', initial: '',
+  //         //   // add other necessary fields
+  //         // );
+  //         Navigator.of(context).push(MaterialPageRoute(
+  //           builder: (context) => const HomeScreen(),
+  //         ));
+  //       }
+  //
+  //       setState(() {
+  //         showSpinner = false;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     // print('Error: $e');
+  //     setState(() {
+  //       showSpinner = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -232,6 +230,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                       logindata.setString('name', userData['name']);
                                       logindata.setString('email', userData['email']);
                                       logindata.setString("id",  snapshot.docs.first.id);
+                                      logindata.setString('profilePic', userData['profilePicture']);
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
 
                                       // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => homeScreen()));

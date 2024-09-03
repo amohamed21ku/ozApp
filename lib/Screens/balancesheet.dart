@@ -124,15 +124,20 @@ class _BalanceSheetState extends State<BalanceSheet> {
                     itemCount: customers.length,
                     itemBuilder: (context, index) {
                       final customer = customers[index];
-                      return InfoCard(
-                        name: customer.name,
-                        company: customer.company,
-                        onpress: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => Spreadsheet(customer: customer,),
-                          ));
-                        },
-                        initial: customer.initial, customerId: customer.cid,
+                      return Column(
+                        children: [
+                          InfoCard(
+                            name: customer.name,
+                            company: customer.company,
+                            onpress: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Spreadsheet(customer: customer,),
+                              ));
+                            },
+                            initial: customer.initial, customerId: customer.cid, isUser: false,
+                          ),
+                          const SizedBox(height: 4,)
+                        ],
                       );
                     },
                   ),

@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:oz/Screens/login_screen.dart';
+import 'package:oz/Screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Widgets/todo.dart';
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late String password;
   late String name;
   late String id;
+  late String profilePicture;
   late String email;
   late myUser currentUser;
   final PageController _pageController = PageController(initialPage: 0);
@@ -43,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
         password: 'default_password',
         name: 'Default Name',
         email: 'default@example.com',
-        initial: 'D', id: '000',
+        initial: 'D', id: '000', profilePicture: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
       );
     }
   }
@@ -135,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
 // Delete an event
   Future<void> _deleteEventFromFirestore(int index) async {
     if (events.isEmpty || index < 0 || index >= events.length) {
-      print('Invalid index: $index. List might be empty or index out of range.');
+      // print('Invalid index: $index. List might be empty or index out of range.');
       return;
     }
 
@@ -152,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
         isCheckedList.removeAt(index);
       });
     } else {
-      print('No docId found for the event at index $index.');
+      // print('No docId found for the event at index $index.');
     }
   }
 
@@ -167,19 +169,19 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (BuildContext context) {
         return  AlertDialog(
-          title: Text('Add Event'),
+          title: const Text('Add Event'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Task Name',
                 ),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Description (optional)',
                 ),
               ),
@@ -190,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -200,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         : descriptionController.text);
                 Navigator.of(context).pop();
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -215,13 +217,15 @@ class _HomeScreenState extends State<HomeScreen> {
       email = logindata.getString('email')!;
       name = logindata.getString('name')!;
       id = logindata.getString('id')!;
+      profilePicture = logindata.getString('profilePic')!;
+
       currentUser = myUser(
         username: username,
         password: password,
         name: name,
         email: email,
         initial: name[0],
-        id: id,
+        id: id, profilePicture: profilePicture,
       );
     });
 
@@ -233,9 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final fetchedEvents = querySnapshot.docs.map((doc) => {
       'docId': doc.id,
-      'title': doc.data()?['Task'] ?? 'No Title',
-      'description': doc.data()?['Description'] ?? 'No Description',
-      'isChecked': doc.data()?['isChecked'] ?? false,
+      'title': doc.data()['Task'] ?? 'No Title',
+      'description': doc.data()['Description'] ?? 'No Description',
+      'isChecked': doc.data()['isChecked'] ?? false,
     }).toList();
 
     setState(() {
@@ -335,22 +339,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         _onItemTapped(2);
                       },
                       child: Container(
-                        padding: EdgeInsets.all(2.0),
+                        padding: const EdgeInsets.all(2.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Color(0xffa4392f),
+                            color: const Color(0xffa4392f),
                             width: 3.0,
                           ),
                         ),
                         alignment: Alignment.topRight,
-                        child: const Hero(
+                        // Replace the following CircleAvatar in the `buildHomePage` method:
+// child: const Hero(
+//   tag: 'profile_pic',
+//   child: CircleAvatar(
+//     radius: 30.0,
+//     backgroundImage: AssetImage('images/profile.jpg'),
+//   ),
+// ),
+
+                        child: Hero(
                           tag: 'profile_pic',
                           child: CircleAvatar(
                             radius: 30.0,
-                            backgroundImage: AssetImage('images/profile.jpg'),
+                            backgroundImage: currentUser.profilePicture != null
+                                ? CachedNetworkImageProvider(currentUser.profilePicture!)
+                                : const AssetImage('images/man.png') as ImageProvider,
+
                           ),
                         ),
+
                       ),
                     ),
                   ],
@@ -389,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 8,),
+                const SizedBox(height: 8,),
 
                 Row(
                   children: [
@@ -432,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 20),
                 Card(
-                  color: Color(0xbba4392f),
+                  color: const Color(0xbba4392f),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
@@ -448,7 +465,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Today\'s Events',
+                                  'Today\'s Tasks',
                                   style: GoogleFonts.poppins(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
@@ -458,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 Row(
                                   children: [
-                                    IconButton(onPressed: _refreshEvents, icon: Icon(size: 25,Icons.refresh,color: Colors.white,)),
+                                    IconButton(onPressed: _refreshEvents, icon: const Icon(size: 25,Icons.refresh,color: Colors.white,)),
                                     IconButton(
                                       onPressed: _showAddEventDialog,
                                       icon: const Icon(
@@ -535,20 +552,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                               });
 
                                             } catch (e) {
-                                              print("Error updating Firestore: $e");
+                                              // print("Error updating Firestore: $e");
                                             }
                                           } else {
-                                            print("Document ID is null. Cannot update Firestore.");
+                                            // print("Document ID is null. Cannot update Firestore.");
                                           }
                                         },
                                         child: Icon(
                                           event['isChecked'] ? Icons.check_circle : Icons.check_circle_outline,
                                           size: 30.0,
-                                          color: Color(0xffa4392f),
+                                          color: const Color(0xffa4392f),
                                         ),
 
                                       ),
-                                      SizedBox(width: 15), // Add spacing between the icon and text if needed
+                                      const SizedBox(width: 15), // Add spacing between the icon and text if needed
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -597,84 +614,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildProfilePage() {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Profile',
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xffa4392f),
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
-      backgroundColor: Colors.white,
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Color(0xffa4392f),
-                    width: 3.0,
-                  ),
-                ),
-                alignment: Alignment.topRight,
-                child: const Hero(
-                  tag: 'profile_pic',
-                  child: CircleAvatar(
-                    radius: 80.0,
-                    backgroundImage: AssetImage('images/profile.jpg'),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                currentUser.name,
-                style: GoogleFonts.poppins(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                currentUser.email,
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () => _logout(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xffa4392f),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text(
-                  'Logout',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return ProfilePage(currentUser: currentUser);
   }
 }

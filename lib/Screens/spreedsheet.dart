@@ -152,7 +152,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xffa4392f),
+          backgroundColor: const Color(0xffa4392f),
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,
@@ -190,7 +190,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                     color: Colors.black.withOpacity(0.6),
                     spreadRadius: 0,
                     blurRadius: 0,
-                    offset: Offset(0, 0), // Shadow position
+                    offset: const Offset(0, 0), // Shadow position
                   ),
                 ],
               ),
@@ -198,8 +198,8 @@ class _SpreadsheetState extends State<Spreadsheet> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.person_pin,color: Colors.white,),
-                  SizedBox(width: 8,),
+                  const Icon(Icons.person_pin,color: Colors.white,),
+                  const SizedBox(width: 8,),
                   Text(
                     widget.customer.name,
                     style: GoogleFonts.poppins(
@@ -211,7 +211,7 @@ class _SpreadsheetState extends State<Spreadsheet> {
                 ],
               ),
               ),
-                  SizedBox(height: 50,),
+                  const SizedBox(height: 50,),
                   LayoutBuilder(
                     builder: (context, constraints) {
                       return SingleChildScrollView(
@@ -227,8 +227,8 @@ class _SpreadsheetState extends State<Spreadsheet> {
                                   child: DataTable( // add some styling
                                     columnSpacing: 10,
                                     headingRowHeight: 40,
-                                    headingRowColor: MaterialStateColor.resolveWith((states) => const Color(0xffa4392f)), // Apply background color to the entire heading row
-                                    dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white), // Optional: Style data rows if needed
+                                    headingRowColor: WidgetStateColor.resolveWith((states) => const Color(0xffa4392f)), // Apply background color to the entire heading row
+                                    dataRowColor: WidgetStateColor.resolveWith((states) => Colors.white), // Optional: Style data rows if needed
 
                                     columns: [
                                       DataColumn(label: Text('Goods', style: GoogleFonts.poppins(fontSize: 14,color: Colors.white,fontWeight: FontWeight.bold))),

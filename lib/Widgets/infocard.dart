@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ class InfoCard extends StatelessWidget {
   final String initial;
   final String customerId; // Add customerId to uniquely identify customers
   final String? profilePicture; // Add profilePicture field
+  final bool isUser;
 
   const InfoCard({
     super.key,
@@ -19,7 +21,7 @@ class InfoCard extends StatelessWidget {
     required this.onpress,
     required this.initial,
     required this.customerId,
-    this.profilePicture,
+    this.profilePicture, required this.isUser,
   });
 
   Future<void> deleteCustomer(BuildContext context) async {
@@ -37,12 +39,12 @@ class InfoCard extends StatelessWidget {
     Widget profIcon;
     if (profilePicture != null && profilePicture!.isNotEmpty) {
       profIcon = CircleAvatar(
-        radius: 20,
-        backgroundImage: NetworkImage(profilePicture!),
+        radius: 30,
+        backgroundImage: CachedNetworkImageProvider(profilePicture!),
       );
     } else {
       profIcon = CircleAvatar(
-        radius: 20,
+        radius: 25,
         backgroundColor: const Color(0xffa4392f),
         child: Text(
           initial,
@@ -55,118 +57,127 @@ class InfoCard extends StatelessWidget {
       );
     }
 
-    return Dismissible(
-      key: UniqueKey(), // Unique key for each card
-      direction: DismissDirection.endToStart, // Swipe direction
-      confirmDismiss: (direction) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                'Confirm Delete',
-                style: GoogleFonts.poppins(
-                  color: const Color(0xffa4392f), // Specify the color
-                ),
-              ),
-              content: Text(
-                'Do you want to delete this customer?',
-                style: GoogleFonts.poppins(), // Use default Poppins style
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false); // Cancel deletion
-                  },
-                  child: Text(
-                    'No',
-                    style: GoogleFonts.poppins(
-                      color: const Color(0xffa4392f), // Specify the color
-                    ),
+    Widget cardContent = GestureDetector(
+      onTap: onpress,
+      child: Material(
+        elevation: 10, // Add elevation to the whole container
+        borderRadius: BorderRadius.circular(30),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  profIcon,
+                  const SizedBox(
+                    width: 15,
                   ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(true); // Confirm deletion
-                  },
-                  child: Text(
-                    'Yes',
-                    style: GoogleFonts.poppins(
-                      color: const Color(0xffa4392f), // Specify the color
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 6,),
+                      Text(
+                        name,
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        company,
+                        style: GoogleFonts.poppins(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-      onDismissed: (direction) async {
-        // Perform deletion here if confirmed
-        await deleteCustomer(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$name deleted')),
-        );
-      },
-      background: Container(
-        color: const Color(0xffa4392f),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        alignment: Alignment.centerRight,
-        child: const Icon(Icons.delete, color: Colors.white),
-      ),
-      child: GestureDetector(
-        onTap: onpress,
-        child: Material(
-          elevation: 6, // Add elevation to the whole container
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 5),
-            height: 70,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    profIcon,
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          name,
-                          style: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          company,
-                          style: GoogleFonts.poppins(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  size: 15,
-                ),
-              ],
-            ),
+                ],
+              ),
+              const Icon(
+                Icons.arrow_forward_ios,
+                size: 15,
+              ),
+            ],
           ),
         ),
       ),
     );
+
+    // Return the card content wrapped in a Dismissible widget if isUser is false
+    if (!isUser) {
+      return Dismissible(
+        key: UniqueKey(), // Unique key for each card
+        direction: DismissDirection.endToStart, // Swipe direction
+        confirmDismiss: (direction) async {
+          return await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(
+                  'Confirm Delete',
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xffa4392f), // Specify the color
+                  ),
+                ),
+                content: Text(
+                  'Do you want to delete this customer?',
+                  style: GoogleFonts.poppins(), // Use default Poppins style
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false); // Cancel deletion
+                    },
+                    child: Text(
+                      'No',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xffa4392f), // Specify the color
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(true); // Confirm deletion
+                    },
+                    child: Text(
+                      'Yes',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xffa4392f), // Specify the color
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+        onDismissed: (direction) async {
+          // Perform deletion here if confirmed
+          await deleteCustomer(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('$name deleted')),
+          );
+        },
+        background: Container(
+          color: const Color(0xffa4392f),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          alignment: Alignment.centerRight,
+          child: const Icon(Icons.delete, color: Colors.white),
+        ),
+        child: cardContent,
+      );
+    } else {
+      // Return just the card without Dismissible functionality
+      return cardContent;
+    }
   }
+
 }

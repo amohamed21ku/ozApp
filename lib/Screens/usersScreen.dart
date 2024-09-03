@@ -35,6 +35,7 @@ class _UsersScreenState extends State<UsersScreen> {
         final email = doc['email'] as String;
         final username = doc['username'] as String;
         final password = doc['password'] as String;
+        final profilePicture = doc['profilePicture'] as String;
         final id = doc.id;
         final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         return myUser(
@@ -42,7 +43,7 @@ class _UsersScreenState extends State<UsersScreen> {
           email: email,
           initial: initial,
           username: username,
-          password: password, id: id,
+          password: password, id: id, profilePicture: profilePicture,
         );
       }).toList();
     } catch (error) {
@@ -82,13 +83,13 @@ class _UsersScreenState extends State<UsersScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xffa4392f),
-        onPressed: () {
-          // Add functionality to add new customers here
-        },
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   backgroundColor: const Color(0xffa4392f),
+      //   onPressed: () {
+      //     // Add functionality to add new customers here
+      //   },
+      //   child: const Icon(Icons.add, color: Colors.white),
+      // ),
       body: ModalProgressHUD(
         progressIndicator: const CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
@@ -134,14 +135,20 @@ class _UsersScreenState extends State<UsersScreen> {
                     itemCount: users.length,
                     itemBuilder: (context, index) {
                       final user = users[index];
-                      return InfoCard(
-                        name: user.name,
-                        company: user.email,
-                        onpress: () {
-                          // print(user.name);
-                        },
-                        initial: user.initial,
-                        customerId: '', // Assuming this is needed for the infoCard widget
+                      return Column(
+                        children: [
+                          InfoCard(
+                            profilePicture: user.profilePicture,
+                            name: user.name,
+                            company: user.email,
+                            onpress: () {
+                              // print(user.name);
+                            },
+                            initial: user.initial,
+                            customerId: '', isUser: true, // Assuming this is needed for the infoCard widget
+                          ),
+                          const SizedBox(height: 4,)
+                        ],
                       );
                     },
                   ),

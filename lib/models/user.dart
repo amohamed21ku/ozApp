@@ -13,6 +13,6 @@ class myUser {
     required this.name,
     required this.email,
     required this.initial,
-    this.profilePicture,
+    required this.profilePicture,
   });
 }

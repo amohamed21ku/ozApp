@@ -175,7 +175,7 @@ class _MyCardState extends State<MyCard> {
                     controller: _priceController,
                   ),
                 ),
-                SizedBox(width: 41,)
+                const SizedBox(width: 41,)
               ],
             ),
             const SizedBox(height: 4),

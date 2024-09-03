@@ -30,21 +30,30 @@ class _CustomerScreenState extends State<CustomerScreen> {
     });
 
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('customers').get();
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('customers').get();
       customers.clear(); // Clear existing data
       for (var doc in querySnapshot.docs) {
         final name = doc['name'] as String;
         final company = doc['company'] as String;
-        final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
+        final initial =
+            name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
         final cid = doc.id;
         final goods = doc['goods'];
-        customers.add(Customer(name: name, company: company, initial: initial, items: items, cid: cid, goods: goods));
+        customers.add(Customer(
+            name: name,
+            company: company,
+            initial: initial,
+            items: items,
+            cid: cid,
+            goods: goods));
       }
 
       // Cache the customer data
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('customers', jsonEncode(customers.map((customer) => customer.toJson()).toList()));
+      await prefs.setString('customers',
+          jsonEncode(customers.map((customer) => customer.toJson()).toList()));
     } catch (error) {
       // print('Error fetching customers: $error');
     }
@@ -64,7 +73,6 @@ class _CustomerScreenState extends State<CustomerScreen> {
     Map goods = {};
     Map items = {};
 
-
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -81,9 +89,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Name',
-                  labelStyle: TextStyle(color: Color(0xffa4392f)), // Label color
+                  labelStyle:
+                      TextStyle(color: Color(0xffa4392f)), // Label color
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffa4392f)), // Underline color when focused
+                    borderSide: BorderSide(
+                        color:
+                            Color(0xffa4392f)), // Underline color when focused
                   ),
                 ),
                 cursorColor: const Color(0xffa4392f), // Cursor color
@@ -92,9 +103,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Company',
-                  labelStyle: TextStyle(color: Color(0xffa4392f)), // Label color
+                  labelStyle:
+                      TextStyle(color: Color(0xffa4392f)), // Label color
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xffa4392f)), // Underline color when focused
+                    borderSide: BorderSide(
+                        color:
+                            Color(0xffa4392f)), // Underline color when focused
                   ),
                 ),
                 cursorColor: const Color(0xffa4392f), // Cursor color
@@ -120,15 +134,16 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 await FirebaseFirestore.instance.collection('customers').add({
                   'name': name,
                   'company': company,
-                  'goods':goods,
-                  'items':items,
+                  'goods': goods,
+                  'items': items,
                   // Add other fields as needed
                 });
                 Navigator.of(context).pop(); // Close dialog after adding
                 await fetchCustomers(); // Refresh customer list
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xffa4392f), // Button background color
+                backgroundColor:
+                    const Color(0xffa4392f), // Button background color
               ),
               child: Text(
                 'Add',
@@ -174,81 +189,96 @@ class _CustomerScreenState extends State<CustomerScreen> {
       ),
       body: showSpinner
           ? const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFA4392F)), // Change color here
-        ),
-      ) : RefreshIndicator(
-        onRefresh: _handleRefresh,
-        color: const Color(0xffa4392f), // Change refresh indicator color to theme color
-        backgroundColor: Colors.grey[200], // Change background color of refresh indicator
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              // Padding(
-              //   padding: const EdgeInsets.all(25.0),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       // Row(
-              //       //   children: [
-              //       //     Text(
-              //       //       'Customer List',
-              //       //       style: GoogleFonts.poppins(
-              //       //         fontSize: 16.0,
-              //       //         fontWeight: FontWeight.w600,
-              //       //       ),
-              //       //     ),
-              //       //   ],
-              //       // ),
-              //       // const SizedBox(height: 10),
-              //     ],
-              //   ),
-              // ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: FutureBuilder(
-                  future: SharedPreferences.getInstance(),
-                  builder: (BuildContext context, AsyncSnapshot<SharedPreferences> snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    List<Customer> cachedCustomers = [];
-                    try {
-                      List<dynamic> jsonList = jsonDecode(snapshot.data!.getString('customers')!);
-                      cachedCustomers = jsonList.map((item) => Customer.fromJson(item)).toList();
-                    } catch (error) {
-                      // print('Error decoding cached customers: $error');
-                    }
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: cachedCustomers.length,
-                      itemBuilder: (context, index) {
-                        final customer = cachedCustomers[index];
-                        return InfoCard(
-                          name: customer.name,
-                          company: customer.company,
-                          onpress: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => CustomerItemsScreen(customer: customer),
-                            ));
-                          },
-                          initial: customer.initial,
-                          customerId: customer.cid,
-                        );
-                      },
-                    );
-                  },
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Color(0xFFA4392F)), // Change color here
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _handleRefresh,
+              color: const Color(
+                  0xffa4392f), // Change refresh indicator color to theme color
+              backgroundColor: Colors
+                  .grey[200], // Change background color of refresh indicator
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Padding(
+                    //   padding: const EdgeInsets.all(25.0),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       // Row(
+                    //       //   children: [
+                    //       //     Text(
+                    //       //       'Customer List',
+                    //       //       style: GoogleFonts.poppins(
+                    //       //         fontSize: 16.0,
+                    //       //         fontWeight: FontWeight.w600,
+                    //       //       ),
+                    //       //     ),
+                    //       //   ],
+                    //       // ),
+                    //       // const SizedBox(height: 10),
+                    //     ],
+                    //   ),
+                    // ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: FutureBuilder(
+                        future: SharedPreferences.getInstance(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<SharedPreferences> snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          List<Customer> cachedCustomers = [];
+                          try {
+                            List<dynamic> jsonList = jsonDecode(
+                                snapshot.data!.getString('customers')!);
+                            cachedCustomers = jsonList
+                                .map((item) => Customer.fromJson(item))
+                                .toList();
+                          } catch (error) {
+                            // print('Error decoding cached customers: $error');
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: cachedCustomers.length,
+                            itemBuilder: (context, index) {
+                              final customer = cachedCustomers[index];
+                              return Column(
+                                children: [
+                                  InfoCard(
+                                    name: customer.name,
+                                    company: customer.company,
+                                    onpress: () {
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            CustomerItemsScreen(customer: customer),
+                                      ));
+                                    },
+                                    initial: customer.initial,
+                                    customerId: customer.cid, isUser: false,
+                                  ),
+                                  const SizedBox(height: 4,)
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

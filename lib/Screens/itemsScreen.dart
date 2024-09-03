@@ -166,6 +166,7 @@ class ItemsScreenState extends State<ItemsScreen> {
               child:  Text("Delete",style: GoogleFonts.poppins(color: const Color(0xffa4392f)),),
               onPressed: () {
                 Navigator.of(context).pop(true);
+                deleteItem(index);
               },
             ),
           ],
@@ -180,7 +181,7 @@ class ItemsScreenState extends State<ItemsScreen> {
       try {
         await FirebaseFirestore.instance
             .collection('items')
-            .doc(filteredList[index]['documentId'])
+            .doc(filteredList[index]['id'])
             .delete();
       } catch (e) {
         // print('Error deleting item: $e');
@@ -325,7 +326,7 @@ class ItemsScreenState extends State<ItemsScreen> {
         const SnackBar(content: Text('Data Saved')),
       );
     } catch (e) {
-      print('Error saving changes: $e');
+      // print('Error saving changes: $e');
     } finally {
       // setState(() => isLoading = false);
     }
@@ -391,7 +392,7 @@ class ItemsScreenState extends State<ItemsScreen> {
               color: Colors.white,
             ),
             onPressed: () {
-              saveChangesToFirebase();
+              // saveChangesToFirebase();
               Navigator.pop(context);
             },
           ),
@@ -485,11 +486,12 @@ class ItemsScreenState extends State<ItemsScreen> {
                               ),
                             ),
                             IconButton(
-                              onPressed: GsheetAPI().uploadDataToGoogleSheet,
+                              onPressed:saveChangesToFirebase,
+                              // GsheetAPI().uploadDataToGoogleSheet,
       
                               icon: const Icon(
                                 size: 25,
-                                Icons.upload_file,
+                                Icons.save,
                                 color: Color(0xffa4392f),
                               ),
                             ),
@@ -614,7 +616,7 @@ class ItemsScreenState extends State<ItemsScreen> {
         ),
         floatingActionButton: edit
             ? FloatingActionButton(
-          onPressed: saveChangesToFirebase,
+          onPressed: addNewItem,
           backgroundColor: const Color(0xffa4392f),
           child: const Icon(Icons.add, color: Colors.white),
         )
