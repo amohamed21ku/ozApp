@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,7 +20,6 @@ class _SignUpPageState extends State<SignUpPage> {
   File? _profilePicture;
   bool _isLoading = false;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> _pickImage() async {
@@ -41,24 +39,19 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     try {
-      // Create user with Firebase Auth
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      // Generate a new ID for the user document
+      final String userId = _firestore.collection('users').doc().id;
 
       // Upload profile picture to Firebase Storage
       String profilePictureUrl = '';
       if (_profilePicture != null) {
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('profilePictures/${userCredential.user!.uid}.jpg');
+        final storageRef = FirebaseStorage.instance.ref().child('profilePictures/$userId.jpg');
         await storageRef.putFile(_profilePicture!);
         profilePictureUrl = await storageRef.getDownloadURL();
       }
 
       // Save user details in Firestore
-      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+      await _firestore.collection('users').doc(userId).set({
         'name': _nameController.text.trim(),
         'username': _usernameController.text.trim(),
         'password': _passwordController.text.trim(),
@@ -69,8 +62,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
       // Navigate to the main page or show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign up successful!')),
+        const SnackBar(content: Text('Sign up successful!')),
       );
+
+      // Navigate to the HomeScreen
+      Navigator.pushReplacementNamed(context, 'homeScreen');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -80,6 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
         _isLoading = false;
       });
     }
+    Navigator.pop(context);
   }
 
   @override
@@ -105,10 +102,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundColor: const Color(0xffa4392f).withOpacity(0.5),
-                  backgroundImage:
-                  _profilePicture != null ? FileImage(_profilePicture!) : null,
+                  backgroundImage: _profilePicture != null ? FileImage(_profilePicture!) : null,
                   child: _profilePicture == null
-                      ? Icon(Icons.add_a_photo, color: Colors.white, size: 50)
+                      ? const Icon(Icons.add_a_photo, color: Colors.white, size: 50)
                       : null,
                 ),
               ),
@@ -130,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                 ),
                 child: _isLoading
-                    ? CircularProgressIndicator(
+                    ? const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 )
                     : Text(
@@ -154,11 +150,11 @@ class _SignUpPageState extends State<SignUpPage> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: GoogleFonts.poppins(color: const Color(0xffa4392f)),
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: const Color(0xffa4392f)),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xffa4392f)),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: const Color(0xffa4392f), width: 2.0),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xffa4392f), width: 2.0),
         ),
       ),
       style: GoogleFonts.poppins(color: Colors.black),
