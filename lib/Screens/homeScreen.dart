@@ -452,7 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: const Color(0xbba4392f),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -523,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child:Card(
                                 elevation: 5,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -559,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           }
                                         },
                                         child: Icon(
-                                          event['isChecked'] ? Icons.check_circle : Icons.check_circle_outline,
+                                          event['isChecked'] ? Icons.check_circle : Icons.task_alt,
                                           size: 30.0,
                                           color: const Color(0xffa4392f),
                                         ),
