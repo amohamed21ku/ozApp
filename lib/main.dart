@@ -15,12 +15,14 @@ Future<void> main() async {
 
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      options: const FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
-          appId:   "1:648146955193:android:50dc26b187ddce90022468",
-          messagingSenderId:  "648146955193",
-          projectId: "ozapp-310aa")
-  );
+  await Firebase.initializeApp();
+
+  // await Firebase.initializeApp(
+  //     options: const FirebaseOptions(apiKey: "AIzaSyC5jqnQLoXXHnICVAgqmKEMTIIPCOIifAs",
+  //         appId:   "1:648146955193:android:50dc26b187ddce90022468",
+  //         messagingSenderId:  "648146955193",
+  //         projectId: "ozapp-310aa")
+  // );
   // GsheetAPI().fetchDataFromFirestore();
   // GsheetAPI().fetchDataFromFirestore();
   // WidgetsFlutterBinding.ensureInitialized();
