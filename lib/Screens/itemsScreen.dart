@@ -26,7 +26,16 @@ class ItemsScreenState extends State<ItemsScreen> {
 
   TextEditingController searchController = TextEditingController();
   List<String> columnOrder = [
-    'Kodu', 'Name', 'Eni', 'Gramaj', 'Price', 'Date', 'Supplier', 'Kalite', 'NOT', 'Item No'
+    'Kodu',
+    'Name',
+    'Eni',
+    'Gramaj',
+    'Price',
+    'Date',
+    'Supplier',
+    'Kalite',
+    'NOT',
+    'Item No'
   ];
   Map<String, bool> columnVisibility = {
     'Kodu': true,
@@ -63,11 +72,13 @@ class ItemsScreenState extends State<ItemsScreen> {
               ),
               content: SizedBox(
                 width: double.maxFinite,
-                height: 400, // Set a fixed height to avoid oversized drag targets
+                height:
+                    400, // Set a fixed height to avoid oversized drag targets
                 child: IgnorePointer(
                   ignoring: false,
                   child: ReorderableListView(
-                    physics: const ClampingScrollPhysics(), // Use clamping physics to prevent bouncing
+                    physics:
+                        const ClampingScrollPhysics(), // Use clamping physics to prevent bouncing
                     onReorder: (int oldIndex, int newIndex) {
                       setState(() {
                         if (newIndex > oldIndex) {
@@ -82,7 +93,8 @@ class ItemsScreenState extends State<ItemsScreen> {
                         key: Key(key),
                         title: Text(
                           key,
-                          style: GoogleFonts.poppins(color: Colors.black , fontWeight: FontWeight.w400),
+                          style: GoogleFonts.poppins(
+                              color: Colors.black, fontWeight: FontWeight.w400),
                         ),
                         value: columnVisibility[key],
                         onChanged: (bool? value) {
@@ -122,8 +134,7 @@ class ItemsScreenState extends State<ItemsScreen> {
 
   Future<void> _selectDate(BuildContext context, int index) async {
     DateTime initialDate =
-        DateTime.tryParse(filteredList[index]['Date']) ??
-            DateTime.now();
+        DateTime.tryParse(filteredList[index]['Date']) ?? DateTime.now();
     DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -133,8 +144,8 @@ class ItemsScreenState extends State<ItemsScreen> {
         return Theme(
           data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(primary: Color(0xffa4392f)),
-            buttonTheme: const ButtonThemeData(
-                textTheme: ButtonTextTheme.primary),
+            buttonTheme:
+                const ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
           child: child!,
         );
@@ -152,18 +163,29 @@ class ItemsScreenState extends State<ItemsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text("Delete Item",style: GoogleFonts.poppins(color: Colors.black),),
+          title: Text(
+            "Delete Item",
+            style: GoogleFonts.poppins(color: Colors.black),
+          ),
           content: Text(
-            "Are you sure you want to delete the item with code ${filteredList[index]['Kodu']}?",style: GoogleFonts.poppins(color: Colors.black),),
+            "Are you sure you want to delete the item with code ${filteredList[index]['Kodu']}?",
+            style: GoogleFonts.poppins(color: Colors.black),
+          ),
           actions: <Widget>[
             TextButton(
-              child:  Text("Cancel",style: GoogleFonts.poppins(color:const Color(0xffa4392f) ),),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.poppins(color: const Color(0xffa4392f)),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             TextButton(
-              child:  Text("Delete",style: GoogleFonts.poppins(color: const Color(0xffa4392f)),),
+              child: Text(
+                "Delete",
+                style: GoogleFonts.poppins(color: const Color(0xffa4392f)),
+              ),
               onPressed: () {
                 Navigator.of(context).pop(true);
                 deleteItem(index);
@@ -193,9 +215,6 @@ class ItemsScreenState extends State<ItemsScreen> {
     });
   }
 
-
-
-
   DateTime excelSerialDateToDateTime(int serialDate) {
     return DateTime(1899, 12, 30).add(Duration(days: serialDate));
   }
@@ -207,9 +226,9 @@ class ItemsScreenState extends State<ItemsScreen> {
 
   Future<void> fetchDataFromFirestore(bool withLoading) async {
     searchController.clear();
-    setState(() => isLoading = withLoading );
+    setState(() => isLoading = withLoading);
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-    await FirebaseFirestore.instance.collection('items').get();
+        await FirebaseFirestore.instance.collection('items').get();
 
     dataList = querySnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data();
@@ -224,19 +243,22 @@ class ItemsScreenState extends State<ItemsScreen> {
 
     // Cache the data
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('itemsData', jsonEncode(dataList)); // Use jsonEncode here
+    await prefs.setString(
+        'itemsData', jsonEncode(dataList)); // Use jsonEncode here
 
     setState(() => isLoading = false);
   }
 
-  Future<void>  saveChangesToFirebase() async {
+  Future<void> saveChangesToFirebase() async {
     WriteBatch batch = FirebaseFirestore.instance.batch();
 
     try {
       for (int i = 0; i < filteredList.length; i++) {
         if (filteredList[i].containsKey('isNew') && filteredList[i]['isNew']) {
           // Add new item to Firebase
-          DocumentReference newDoc = FirebaseFirestore.instance.collection('items').doc(filteredList[i]['Kodu']);
+          DocumentReference newDoc = FirebaseFirestore.instance
+              .collection('items')
+              .doc(filteredList[i]['Kodu']);
           batch.set(newDoc, {
             'Kodu': filteredList[i]['Kodu'],
             'Item Name': filteredList[i]['Item Name'],
@@ -265,12 +287,14 @@ class ItemsScreenState extends State<ItemsScreen> {
           //   // Replace with the actual item name
           //   // Add more values as needed for other columns
           // ];
-
-
         } else {
           // Update existing item in Firebase
-          DocumentReference oldDocRef = FirebaseFirestore.instance.collection('items').doc(filteredList[i]['documentId']);
-          DocumentReference newDocRef = FirebaseFirestore.instance.collection('items').doc(filteredList[i]['Kodu']);
+          DocumentReference oldDocRef = FirebaseFirestore.instance
+              .collection('items')
+              .doc(filteredList[i]['documentId']);
+          DocumentReference newDocRef = FirebaseFirestore.instance
+              .collection('items')
+              .doc(filteredList[i]['Kodu']);
 
           if (filteredList[i]['documentId'] != filteredList[i]['Kodu']) {
             // If Kodu has changed, copy to a new document and delete the old one
@@ -286,7 +310,6 @@ class ItemsScreenState extends State<ItemsScreen> {
               'NOT': filteredList[i]['NOT'],
               'Supplier': filteredList[i]['Supplier'],
               'Previous_Prices': filteredList[i]['Previous_Prices'],
-
             });
             batch.delete(oldDocRef);
 
@@ -306,14 +329,15 @@ class ItemsScreenState extends State<ItemsScreen> {
               'NOT': filteredList[i]['NOT'],
               'Supplier': filteredList[i]['Supplier'],
               'Previous_Prices': filteredList[i]['Previous_Prices'],
-
             });
           }
         }
       }
 
       for (var item in itemsToDelete) {
-        DocumentReference docRef = FirebaseFirestore.instance.collection('items').doc(item['documentId']);
+        DocumentReference docRef = FirebaseFirestore.instance
+            .collection('items')
+            .doc(item['documentId']);
         batch.delete(docRef);
       }
 
@@ -331,6 +355,7 @@ class ItemsScreenState extends State<ItemsScreen> {
       // setState(() => isLoading = false);
     }
   }
+
   Future<void> saveDataToSharedPreferences() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('dataList', json.encode(dataList));
@@ -372,14 +397,11 @@ class ItemsScreenState extends State<ItemsScreen> {
     setState(() {
       filteredList = dataList
           .where((item) =>
-      item['Kodu'].toLowerCase().contains(query.toLowerCase()) ||
-          item['Item Name'].toLowerCase().contains(query.toLowerCase()))
+              item['Kodu'].toLowerCase().contains(query.toLowerCase()) ||
+              item['Item Name'].toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -416,7 +438,8 @@ class ItemsScreenState extends State<ItemsScreen> {
             icon: Icon(
               edit ? Icons.edit_off : Icons.edit,
               color: Colors.white,
-            ),          ),
+            ),
+          ),
           IconButton(
             onPressed: () {
               setState(() {
@@ -424,7 +447,7 @@ class ItemsScreenState extends State<ItemsScreen> {
               });
             },
             icon: Icon(
-              size:30,
+              size: 30,
               isVisible ? Icons.arrow_drop_up : Icons.arrow_drop_down,
               color: Colors.white,
             ),
@@ -459,8 +482,10 @@ class ItemsScreenState extends State<ItemsScreen> {
                               decoration: InputDecoration(
                                 labelText: 'Search',
                                 hintText: 'Search by Kodu or Name',
-                                hintStyle: GoogleFonts.poppins(fontWeight: FontWeight.w200),
-                                labelStyle: GoogleFonts.poppins(color: Colors.grey),
+                                hintStyle: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.w200),
+                                labelStyle:
+                                    GoogleFonts.poppins(color: Colors.grey),
                                 prefixIcon: const Icon(Icons.search),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(width: 1),
@@ -475,7 +500,9 @@ class ItemsScreenState extends State<ItemsScreen> {
                               style: GoogleFonts.poppins(fontSize: 12),
                             ),
                           ),
-                          const SizedBox(width: 8), // Add some space between TextField and Button
+                          const SizedBox(
+                              width:
+                                  8), // Add some space between TextField and Button
                           IconButton(
                             onPressed: GsheetAPI().uploadDataToFirestore,
                             icon: const Icon(
@@ -485,7 +512,7 @@ class ItemsScreenState extends State<ItemsScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed:saveChangesToFirebase,
+                            onPressed: saveChangesToFirebase,
                             // GsheetAPI().uploadDataToGoogleSheet,
 
                             icon: const Icon(
@@ -533,27 +560,31 @@ class ItemsScreenState extends State<ItemsScreen> {
                   ),
                 ),
               ),
-              Card(
-                color: const Color(0xffa4392f),
-                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(isVisible ? 10.0 : 0.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    children: columnOrder
-                        .where((column) => columnVisibility[column]!)
-                        .map((column) => Expanded(
-                      child: Text(
-                        column,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ))
-                        .toList(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Card(
+                  color: const Color(0xffa4392f),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(isVisible ? 10.0 : 0.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      children: columnOrder
+                          .where((column) => columnVisibility[column]!)
+                          .map((column) => Expanded(
+                                child: Text(
+                                  column,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ))
+                          .toList(),
+                    ),
                   ),
                 ),
               ),
@@ -561,51 +592,58 @@ class ItemsScreenState extends State<ItemsScreen> {
                 child: ListView.builder(
                   itemCount: filteredList.length,
                   itemBuilder: (context, index) {
-                    return edit ? EditCard(
-                      index: index,
-                      item: filteredList[index],
-                      onDelete: (int index) {
-                        deleteItem(index);
-                      },
-                      selectDate: _selectDate,
-                      confirmDeleteItem: confirmDeleteItem, columnOrder: columnOrder, columnVisibility: columnVisibility,
-                    ): GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ItemDetailsScreen(
-                              item: filteredList[index],
-                              docId: filteredList[index]['id'],
-                            ),
-                          ),
-                        );
-                      },
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 10),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            children: columnOrder
-                                .where((column) => columnVisibility[column]!)
-                                .map((column) {
-                              final value = filteredList[index][column] ??
-                                  filteredList[index]['Item $column'];
-                              return Expanded(
-                                child: Text(
-                                  column == 'Date' && value is int
-                                      ? formatDateString(
-                                      excelSerialDateToDateTime(value))
-                                      : value.toString(),
-                                  style: GoogleFonts.poppins(fontSize: 12),
+                    return edit
+                        ? EditCard(
+                            index: index,
+                            item: filteredList[index],
+                            onDelete: (int index) {
+                              deleteItem(index);
+                            },
+                            selectDate: _selectDate,
+                            confirmDeleteItem: confirmDeleteItem,
+                            columnOrder: columnOrder,
+                            columnVisibility: columnVisibility,
+                          )
+                        : GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ItemDetailsScreen(
+                                    item: filteredList[index],
+                                    docId: filteredList[index]['id'],
+                                  ),
                                 ),
                               );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    )  ;
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Row(
+                                  children: columnOrder
+                                      .where(
+                                          (column) => columnVisibility[column]!)
+                                      .map((column) {
+                                    final value = filteredList[index][column] ??
+                                        filteredList[index]['Item $column'];
+                                    return Expanded(
+                                      child: Text(
+                                        column == 'Date' && value is int
+                                            ? formatDateString(
+                                                excelSerialDateToDateTime(
+                                                    value))
+                                            : value.toString(),
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 12),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                            ),
+                          );
                   },
                 ),
               ),
@@ -615,12 +653,11 @@ class ItemsScreenState extends State<ItemsScreen> {
       ),
       floatingActionButton: edit
           ? FloatingActionButton(
-        onPressed: addNewItem,
-        backgroundColor: const Color(0xffa4392f),
-        child: const Icon(Icons.add, color: Colors.white),
-      )
+              onPressed: addNewItem,
+              backgroundColor: const Color(0xffa4392f),
+              child: const Icon(Icons.add, color: Colors.white),
+            )
           : null,
-
     );
   }
 }
