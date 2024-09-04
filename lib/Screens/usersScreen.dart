@@ -29,7 +29,8 @@ class _UsersScreenState extends State<UsersScreen> {
     });
 
     try {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('users').get();
+      QuerySnapshot querySnapshot =
+          await FirebaseFirestore.instance.collection('users').get();
       users = querySnapshot.docs.map((doc) {
         final name = doc['name'] as String;
         final email = doc['email'] as String;
@@ -37,13 +38,16 @@ class _UsersScreenState extends State<UsersScreen> {
         final password = doc['password'] as String;
         final profilePicture = doc['profilePicture'] as String;
         final id = doc.id;
-        final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
+        final initial =
+            name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '';
         return myUser(
           name: name,
           email: email,
           initial: initial,
           username: username,
-          password: password, id: id, profilePicture: profilePicture,
+          password: password,
+          id: id,
+          profilePicture: profilePicture,
         );
       }).toList();
     } catch (error) {
@@ -92,14 +96,17 @@ class _UsersScreenState extends State<UsersScreen> {
       // ),
       body: ModalProgressHUD(
         progressIndicator: const CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Color(0xffa4392f)), // Change spinner color to theme color
+          valueColor: AlwaysStoppedAnimation<Color>(
+              Color(0xffa4392f)), // Change spinner color to theme color
           strokeWidth: 5.0, // Adjust spinner thickness if needed
         ),
         inAsyncCall: showSpinner,
         child: RefreshIndicator(
           onRefresh: _handleRefresh,
-          color: const Color(0xffa4392f), // Change refresh indicator color to theme color
-          backgroundColor: Colors.grey[200], // Change background color of refresh indicator
+          color: const Color(
+              0xffa4392f), // Change refresh indicator color to theme color
+          backgroundColor:
+              Colors.grey[200], // Change background color of refresh indicator
           child: ListView.separated(
             // shrinkWrap: true,
             // physics: const NeverScrollableScrollPhysics(),
@@ -107,16 +114,21 @@ class _UsersScreenState extends State<UsersScreen> {
             itemBuilder: (context, index) {
               final user = users[index];
               return InfoCard(
-                    profilePicture: user.profilePicture,
-                    name: user.name,
-                    company: user.email,
-                    onpress: () {
-                      // print(user.name);
-                    },
-                    initial: user.initial,
-                    customerId: '', isUser: true, // Assuming this is needed for the infoCard widget
-                  );
-            }, separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 4,),
+                profilePicture: user.profilePicture,
+                name: user.name,
+                company: user.email,
+                onpress: () {
+                  // print(user.name);
+                },
+                initial: user.initial,
+                customerId: '',
+                isUser: true, // Assuming this is needed for the infoCard widget
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(
+              height: 4,
+            ),
           ),
         ),
       ),

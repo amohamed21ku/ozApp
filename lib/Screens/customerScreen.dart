@@ -32,8 +32,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('customers').get();
-      customers.clear(); // Clear existing data
-      for (var doc in querySnapshot.docs) {
+      customers = querySnapshot.docs.map((doc) {
         final name = doc['name'] as String;
         final company = doc['company'] as String;
         final initial =
@@ -41,14 +40,15 @@ class _CustomerScreenState extends State<CustomerScreen> {
         final Map<String, dynamic> items = doc['items'] as Map<String, dynamic>;
         final cid = doc.id;
         final goods = doc['goods'];
-        customers.add(Customer(
-            name: name,
-            company: company,
-            initial: initial,
-            items: items,
-            cid: cid,
-            goods: goods));
-      }
+        return Customer(
+          name: name,
+          company: company,
+          initial: initial,
+          items: items,
+          cid: cid,
+          goods: goods,
+        );
+      }).toList();
 
       // Cache the customer data
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -187,98 +187,66 @@ class _CustomerScreenState extends State<CustomerScreen> {
         onPressed: () => _addCustomer(context),
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      body: showSpinner
-          ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Color(0xFFA4392F)), // Change color here
-              ),
-            )
-          : RefreshIndicator(
-              onRefresh: _handleRefresh,
-              color: const Color(
-                  0xffa4392f), // Change refresh indicator color to theme color
-              backgroundColor: Colors
-                  .grey[200], // Change background color of refresh indicator
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Column(
-                  children: [
-                    // Padding(
-                    //   padding: const EdgeInsets.all(25.0),
-                    //   child: Column(
-                    //     crossAxisAlignment: CrossAxisAlignment.start,
-                    //     children: [
-                    //       // Row(
-                    //       //   children: [
-                    //       //     Text(
-                    //       //       'Customer List',
-                    //       //       style: GoogleFonts.poppins(
-                    //       //         fontSize: 16.0,
-                    //       //         fontWeight: FontWeight.w600,
-                    //       //       ),
-                    //       //     ),
-                    //       //   ],
-                    //       // ),
-                    //       // const SizedBox(height: 10),
-                    //     ],
-                    //   ),
-                    // ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: showSpinner
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xffa4392f)), // Change spinner color to theme color
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: _handleRefresh,
+                color: const Color(
+                    0xffa4392f), // Change refresh indicator color to theme color
+                backgroundColor: Colors
+                    .grey[200], // Change background color of refresh indicator
+                child: FutureBuilder(
+                  future: SharedPreferences.getInstance(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<SharedPreferences> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    List<Customer> cachedCustomers = [];
+                    try {
+                      List<dynamic> jsonList =
+                          jsonDecode(snapshot.data!.getString('customers')!);
+                      cachedCustomers = jsonList
+                          .map((item) => Customer.fromJson(item))
+                          .toList();
+                    } catch (error) {
+                      // print('Error decoding cached customers: $error');
+                    }
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: cachedCustomers.length,
+                      itemBuilder: (context, index) {
+                        final customer = cachedCustomers[index];
+                        return InfoCard(
+                          name: customer.name,
+                          company: customer.company,
+                          onpress: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  CustomerItemsScreen(customer: customer),
+                            ));
+                          },
+                          initial: customer.initial,
+                          customerId: customer.cid,
+                          isUser: false,
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const SizedBox(
+                        height: 4,
                       ),
-                      child: FutureBuilder(
-                        future: SharedPreferences.getInstance(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<SharedPreferences> snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          List<Customer> cachedCustomers = [];
-                          try {
-                            List<dynamic> jsonList = jsonDecode(
-                                snapshot.data!.getString('customers')!);
-                            cachedCustomers = jsonList
-                                .map((item) => Customer.fromJson(item))
-                                .toList();
-                          } catch (error) {
-                            // print('Error decoding cached customers: $error');
-                          }
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: cachedCustomers.length,
-                            itemBuilder: (context, index) {
-                              final customer = cachedCustomers[index];
-                              return Column(
-                                children: [
-                                  InfoCard(
-                                    name: customer.name,
-                                    company: customer.company,
-                                    onpress: () {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            CustomerItemsScreen(customer: customer),
-                                      ));
-                                    },
-                                    initial: customer.initial,
-                                    customerId: customer.cid, isUser: false,
-                                  ),
-                                  const SizedBox(height: 4,)
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
+      ),
     );
   }
 }

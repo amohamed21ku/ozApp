@@ -21,12 +21,16 @@ class InfoCard extends StatelessWidget {
     required this.onpress,
     required this.initial,
     required this.customerId,
-    this.profilePicture, required this.isUser,
+    this.profilePicture,
+    required this.isUser,
   });
 
   Future<void> deleteCustomer(BuildContext context) async {
     try {
-      await FirebaseFirestore.instance.collection('customers').doc(customerId).delete();
+      await FirebaseFirestore.instance
+          .collection('customers')
+          .doc(customerId)
+          .delete();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error deleting customer')),
@@ -60,7 +64,7 @@ class InfoCard extends StatelessWidget {
     Widget cardContent = GestureDetector(
       onTap: onpress,
       child: Material(
-        elevation: 10, // Add elevation to the whole container
+        elevation: 1, // Add elevation to the whole container
         borderRadius: BorderRadius.circular(30),
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -81,7 +85,9 @@ class InfoCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 6,),
+                      const SizedBox(
+                        height: 6,
+                      ),
                       Text(
                         name,
                         style: GoogleFonts.poppins(
@@ -101,10 +107,6 @@ class InfoCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const Icon(
-                Icons.arrow_forward_ios,
-                size: 15,
-              ),
             ],
           ),
         ),
@@ -115,7 +117,7 @@ class InfoCard extends StatelessWidget {
     if (!isUser) {
       return Dismissible(
         key: UniqueKey(), // Unique key for each card
-        direction: DismissDirection.endToStart, // Swipe direction
+        direction: DismissDirection.startToEnd, // Swipe direction
         confirmDismiss: (direction) async {
           return await showDialog(
             context: context,
@@ -167,11 +169,16 @@ class InfoCard extends StatelessWidget {
           );
         },
         background: Container(
-          color: const Color(0xffa4392f),
+          decoration: BoxDecoration(
+            color: const Color(0xffa4392f),
+            borderRadius:
+                BorderRadius.circular(30.0), // Adjust the radius as needed
+          ),
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          alignment: Alignment.centerRight,
+          alignment: Alignment.centerLeft,
           child: const Icon(Icons.delete, color: Colors.white),
         ),
+
         child: cardContent,
       );
     } else {
@@ -179,5 +186,4 @@ class InfoCard extends StatelessWidget {
       return cardContent;
     }
   }
-
 }
