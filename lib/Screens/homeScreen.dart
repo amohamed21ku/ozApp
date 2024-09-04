@@ -254,358 +254,353 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            buildHomePage(),
-            buildToDoPage(),
-            buildProfilePage(),
-          ],
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: const Color(0xffa4392f),
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
+    return Scaffold(
+      body: PageView(
+        onPageChanged: (index){
+          setState(() {});
+        },
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          buildHomePage(),
+          buildToDoPage(),
+          buildProfilePage(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xffa4392f),
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
 
-              icon: Icon(Icons.today),
-              label: 'ToDo',
+            icon: Icon(Icons.today),
+            label: 'ToDo',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.person,
-              ),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white60,
-          selectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
-          unselectedLabelStyle: GoogleFonts.aBeeZee(fontSize: 12),
-          onTap: _onItemTapped,
-        ),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white60,
+        selectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
+        unselectedLabelStyle: GoogleFonts.aBeeZee(fontSize: 12),
+        onTap: _onItemTapped,
       ),
     );
   }
 
   Widget buildHomePage() {
-    return SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white, Colors.white],
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal:  20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white, Colors.white],
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome back,',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black38,
-                          ),
-                        ),
-                        Text(
-                          currentUser.name,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+      ),
+      child: ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome back,',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black38,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        _onItemTapped(2);
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(2.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xffa4392f),
-                            width: 3.0,
-                          ),
-                        ),
-                        alignment: Alignment.topRight,
-                        // Replace the following CircleAvatar in the `buildHomePage` method:
-// child: const Hero(
-//   tag: 'profile_pic',
-//   child: CircleAvatar(
-//     radius: 30.0,
-//     backgroundImage: AssetImage('images/profile.jpg'),
-//   ),
-// ),
-
-                        child: Hero(
-                          tag: 'profile_pic',
-                          child: CircleAvatar(
-                            radius: 30.0,
-                            backgroundImage: currentUser.profilePicture != null
-                                ? CachedNetworkImageProvider(currentUser.profilePicture!)
-                                : const AssetImage('images/man.png') as ImageProvider,
-
-                          ),
-                        ),
-
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RoundedButtonSmall(
-                        colour: Colors.white,
-                        title: 'Items',
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'itemsscreen');
-                        },
-                        width: 10,
-                        height: 100,
-                        icon: Icons.list_alt,
-                        iconColor: const Color(0xffa4392f),
-                        textcolor: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: RoundedButtonSmall(
-                        colour: Colors.white,
-                        title: 'Customers',
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'customerscreen');
-                        },
-                        width: 0,
-                        height: 100,
-                        icon: Icons.person,
-                        iconColor: const Color(0xffa4392f),
-                        textcolor: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8,),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: RoundedButtonSmall(
-                        colour: Colors.white,
-                        title: 'Sheet',
-                        onPressed: () {
-                          Navigator.pushNamed(context, "balancesheet");
-                        },
-                        width: 10,
-                        height: 100,
-                        icon: Icons.newspaper,
-                        iconColor: const Color(0xffa4392f),
-                        textcolor: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: RoundedButtonSmall(
-                        colour: Colors.white,
-                        title: 'Users',
-                        onPressed: () {
-                          Navigator.pushNamed(context, "usersscreen");
-                        },
-                        width: 0,
-                        height: 100,
-                        icon: Icons.supervised_user_circle_outlined,
-                        iconColor: const Color(0xffa4392f),
-                        textcolor: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(child: Container(height: 2, color: Colors.black26)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Card(
-                  color: const Color(0xbba4392f),
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Today\'s Tasks',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white70,
-                                  ),
-                                ),
+                  Text(
+                    currentUser.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  _onItemTapped(2);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(2.0),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xffa4392f),
+                      width: 3.0,
+                    ),
+                  ),
+                  alignment: Alignment.topRight,
+                  // Replace the following CircleAvatar in the `buildHomePage` method:
+              // child: const Hero(
+              //   tag: 'profile_pic',
+              //   child: CircleAvatar(
+              //     radius: 30.0,
+              //     backgroundImage: AssetImage('images/profile.jpg'),
+              //   ),
+              // ),
 
-                                Row(
-                                  children: [
-                                    IconButton(onPressed: _refreshEvents, icon: const Icon(size: 25,Icons.refresh,color: Colors.white,)),
-                                    IconButton(
-                                      onPressed: _showAddEventDialog,
-                                      icon: const Icon(
-                                        size: 25,
-                                        Icons.add,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                  child: Hero(
+                    tag: 'profile_pic',
+                    child: CircleAvatar(
+                      radius: 30.0,
+                      backgroundImage: currentUser.profilePicture != null
+                          ? CachedNetworkImageProvider(currentUser.profilePicture!)
+                          : const AssetImage('images/man.png') as ImageProvider,
 
+                    ),
+                  ),
 
-                              ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: RoundedButtonSmall(
+                  colour: Colors.white,
+                  title: 'Items',
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'itemsscreen');
+                  },
+                  width: 10,
+                  height: 100,
+                  icon: Icons.list_alt,
+                  iconColor: const Color(0xffa4392f),
+                  textcolor: Colors.black,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RoundedButtonSmall(
+                  colour: Colors.white,
+                  title: 'Customers',
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'customerscreen');
+                  },
+                  width: 0,
+                  height: 100,
+                  icon: Icons.person,
+                  iconColor: const Color(0xffa4392f),
+                  textcolor: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8,),
+
+          Row(
+            children: [
+              Expanded(
+                child: RoundedButtonSmall(
+                  colour: Colors.white,
+                  title: 'Sheet',
+                  onPressed: () {
+                    Navigator.pushNamed(context, "balancesheet");
+                  },
+                  width: 10,
+                  height: 100,
+                  icon: Icons.newspaper,
+                  iconColor: const Color(0xffa4392f),
+                  textcolor: Colors.black,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: RoundedButtonSmall(
+                  colour: Colors.white,
+                  title: 'Users',
+                  onPressed: () {
+                    Navigator.pushNamed(context, "usersscreen");
+                  },
+                  width: 0,
+                  height: 100,
+                  icon: Icons.supervised_user_circle_outlined,
+                  iconColor: const Color(0xffa4392f),
+                  textcolor: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(child: Container(height: 2, color: Colors.black26)),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Card(
+            color: const Color(0xbba4392f),
+            elevation: 5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Today\'s Tasks',
+                            style: GoogleFonts.poppins(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white70,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: events.length,
-                          itemBuilder: (context, index) {
-                            final event = events[index];
+                          ),
 
-                            // Ensure timestampString is not null before parsing
-
-
-                            return Dismissible(
-                              direction: DismissDirection.endToStart, // Swipe direction
-
-                              key: UniqueKey(),
-                              background: Container(
-                                color: Colors.white70,
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
-                                child: const Icon(
-                                  Icons.delete,
+                          Row(
+                            children: [
+                              IconButton(onPressed: _refreshEvents, icon: const Icon(size: 25,Icons.refresh,color: Colors.white,)),
+                              IconButton(
+                                onPressed: _showAddEventDialog,
+                                icon: const Icon(
+                                  size: 25,
+                                  Icons.add,
                                   color: Colors.white,
                                 ),
                               ),
-                              onDismissed: (direction) async {
-                                await _deleteEventFromFirestore(index);
+                            ],
+                          ),
 
-                              },
-                              child:Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 12.0,
-                                    horizontal: 15.0,
+
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    itemCount: events.length,
+                    itemBuilder: (context, index) {
+                      final event = events[index];
+
+                      // Ensure timestampString is not null before parsing
+
+
+                      return Dismissible(
+                        direction: DismissDirection.endToStart, // Swipe direction
+
+                        key: UniqueKey(),
+                        background: Container(
+                          color: Colors.white70,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          ),
+                        ),
+                        onDismissed: (direction) async {
+                          await _deleteEventFromFirestore(index);
+
+                        },
+                        child:Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              horizontal: 15.0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    final docId = event['docId'];
+
+                                    if (docId != null) {
+                                      final docRef = FirebaseFirestore.instance.collection('events').doc(docId);
+
+                                      try {
+                                        // Toggle the 'isChecked' value in Firestore
+                                        await docRef.update({
+                                          'isChecked': !event['isChecked'], // Toggle the value
+                                        });
+
+                                        // Update local state if needed
+                                        setState(() {
+                                          event['isChecked'] = !event['isChecked'];
+                                        });
+
+                                      } catch (e) {
+                                        // print("Error updating Firestore: $e");
+                                      }
+                                    } else {
+                                      // print("Document ID is null. Cannot update Firestore.");
+                                    }
+                                  },
+                                  child: Icon(
+                                    event['isChecked'] ? Icons.check_circle : Icons.task_alt,
+                                    size: 30.0,
+                                    color: const Color(0xffa4392f),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                                ),
+                                const SizedBox(width: 15), // Add spacing between the icon and text if needed
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      GestureDetector(
-                                        onTap: () async {
-                                          final docId = event['docId'];
-
-                                          if (docId != null) {
-                                            final docRef = FirebaseFirestore.instance.collection('events').doc(docId);
-
-                                            try {
-                                              // Toggle the 'isChecked' value in Firestore
-                                              await docRef.update({
-                                                'isChecked': !event['isChecked'], // Toggle the value
-                                              });
-
-                                              // Update local state if needed
-                                              setState(() {
-                                                event['isChecked'] = !event['isChecked'];
-                                              });
-
-                                            } catch (e) {
-                                              // print("Error updating Firestore: $e");
-                                            }
-                                          } else {
-                                            // print("Document ID is null. Cannot update Firestore.");
-                                          }
-                                        },
-                                        child: Icon(
-                                          event['isChecked'] ? Icons.check_circle : Icons.task_alt,
-                                          size: 30.0,
-                                          color: const Color(0xffa4392f),
+                                      Text(
+                                        event['title'] ?? 'No Title',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black87,
                                         ),
-
                                       ),
-                                      const SizedBox(width: 15), // Add spacing between the icon and text if needed
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              event['title'] ?? 'No Title',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Text(
-                                              '  ${event['description'] ?? 'No Description'}',
-                                              style: GoogleFonts.poppins(
-                                                fontSize: 13,
-                                                color: Colors.black54,
-                                              ),
-                                            ),
-                                          ],
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        '  ${event['description'] ?? 'No Description'}',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 13,
+                                          color: Colors.black54,
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
+                              ],
+                            ),
+                          ),
+                        ),
 
-                            );
-                          },
-                        )
+                      );
+                    },
+                  )
 
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
