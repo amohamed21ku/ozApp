@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   List<Map<String, dynamic>> events = [];
   List<bool> isCheckedList = [];
+  int _backPressCounter = 0; // Counter to track back button presses
 
   @override
   void initState() {
@@ -282,43 +283,61 @@ class _HomeScreenState extends State<HomeScreen> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark); // 2
   }
 
+  Future<bool> _onWillPop() async {
+    if (_backPressCounter < 1) {
+      // If the user has pressed the back button less than once
+      _backPressCounter++;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Press back again to exit'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return false; // Prevent back navigation
+    }
+    return true; // Allow back navigation on the second press
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: [
-          buildHomePage(),
-          buildToDoPage(),
-          buildProfilePage(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xffa4392f),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.today),
-            label: 'ToDo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person,
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            buildHomePage(),
+            buildToDoPage(),
+            buildProfilePage(),
+          ],
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: const Color(0xffa4392f),
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white60,
-        selectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
-        unselectedLabelStyle: GoogleFonts.aBeeZee(fontSize: 12),
-        onTap: _onItemTapped,
+            BottomNavigationBarItem(
+              icon: Icon(Icons.today),
+              label: 'ToDo',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.person,
+              ),
+              label: 'Profile',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white60,
+          selectedLabelStyle: GoogleFonts.poppins(fontSize: 14),
+          unselectedLabelStyle: GoogleFonts.aBeeZee(fontSize: 12),
+          onTap: _onItemTapped,
+        ),
       ),
     );
   }
