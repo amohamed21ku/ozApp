@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
 class WelcomeScreen extends StatefulWidget {
@@ -39,6 +40,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,statusBarIconBrightness: Brightness.dark
+    ));
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
