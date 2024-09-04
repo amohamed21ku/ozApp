@@ -100,61 +100,23 @@ class _UsersScreenState extends State<UsersScreen> {
           onRefresh: _handleRefresh,
           color: const Color(0xffa4392f), // Change refresh indicator color to theme color
           backgroundColor: Colors.grey[200], // Change background color of refresh indicator
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                // Padding(
-                //   padding: const EdgeInsets.all(25.0),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Row(
-                //         children: [
-                //           Text(
-                //             'Users List',
-                //             style: GoogleFonts.poppins(
-                //               fontSize: 16.0,
-                //               fontWeight: FontWeight.w600,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //       const SizedBox(height: 10),
-                //     ],
-                //   ),
-                // ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: users.length,
-                    itemBuilder: (context, index) {
-                      final user = users[index];
-                      return Column(
-                        children: [
-                          InfoCard(
-                            profilePicture: user.profilePicture,
-                            name: user.name,
-                            company: user.email,
-                            onpress: () {
-                              // print(user.name);
-                            },
-                            initial: user.initial,
-                            customerId: '', isUser: true, // Assuming this is needed for the infoCard widget
-                          ),
-                          const SizedBox(height: 4,)
-                        ],
-                      );
+          child: ListView.separated(
+            // shrinkWrap: true,
+            // physics: const NeverScrollableScrollPhysics(),
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index];
+              return InfoCard(
+                    profilePicture: user.profilePicture,
+                    name: user.name,
+                    company: user.email,
+                    onpress: () {
+                      // print(user.name);
                     },
-                  ),
-                ),
-              ],
-            ),
+                    initial: user.initial,
+                    customerId: '', isUser: true, // Assuming this is needed for the infoCard widget
+                  );
+            }, separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 4,),
           ),
         ),
       ),
