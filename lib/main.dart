@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
         "itemsscreen": (context) => const ItemsScreen(),
 
         "customerscreen": (context) => const CustomerScreen(),
-        "signupscreen": (context) =>  SignUpPage(),
+       // "signupscreen": (context) =>  SignUpPage(),
         "balancesheet": (context) => const BalanceSheet(),
         "usersscreen": (context) => const UsersScreen(),
       },
