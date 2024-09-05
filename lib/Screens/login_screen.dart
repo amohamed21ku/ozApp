@@ -205,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushNamed(context, "signupscreen");
+                               // Navigator.pushNamed(context, "signupscreen");
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
